@@ -1,0 +1,10 @@
+2025-09-26 23:34:06,464 INFO gsm.http [rid=e1248be4d269] :: >> GET /
+2025-09-26 23:34:06,466 INFO gsm.http [rid=e1248be4d269] :: << GET / -> 404 in 1.6ms
+2025-09-26 23:34:07,277 INFO gsm.http [rid=9d8b622d7ab9] :: >> GET /favicon.ico
+2025-09-26 23:34:07,278 INFO gsm.http [rid=9d8b622d7ab9] :: << GET /favicon.ico -> 404 in 0.8ms
+2025-09-26 23:34:10,699 INFO gsm.http [rid=0d4458e1d765] :: >> GET /docs
+2025-09-26 23:34:10,700 INFO gsm.http [rid=0d4458e1d765] :: << GET /docs -> 200 in 0.9ms
+2025-09-26 23:34:11,704 INFO gsm.http [rid=7fd08fa25a85] :: >> GET /openapi.json
+2025-09-26 23:34:11,705 INFO gsm.http [rid=7fd08fa25a85] :: << GET /openapi.json -> 200 in 1.4ms
+2025-09-26 23:34:16,217 INFO gsm.http [rid=981ac8070557] :: >> GET /api/v1/prestashop/payments
+2025-09-26 23:34:16,219 INFO gsm.http [rid=981ac8070557] :: << GET /api/v1/prestashop/payments -> 200 in 2.0ms

@@ -4,7 +4,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.core.logging import set_request_id
 import logging
 
-log = logging.getLogger("gsm.http")
+log = logging.getLogger("watchdogs.middleware")
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
