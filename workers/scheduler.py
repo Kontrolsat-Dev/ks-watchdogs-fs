@@ -5,7 +5,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 log = logging.getLogger("workers.scheduler")
 
 def register_jobs(sched: AsyncIOScheduler, db_session_factory):
-    from workers.jobs.prestashop_payments import run as ps_run
+    from workers.jobs.prestashop.prestashop_payments import run as ps_run
 
     sched.add_job(
         ps_run,
