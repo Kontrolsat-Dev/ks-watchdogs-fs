@@ -1,3 +1,5 @@
+# app/core/logging
+
 import logging
 import os
 import re
@@ -54,7 +56,7 @@ def _purge_old_logs(log_dir: str, base_name: str, days: int = 30) -> int:
 def setup_logging() -> None:
     level = os.getenv("LOG_LEVEL", "INFO").upper()
     log_dir = os.getenv("LOG_DIR", os.path.join(os.getcwd(), "logs"))
-    base_name = os.getenv("LOG_BASENAME", "gsm")  # ficheiro principal: gsm.log
+    base_name = os.getenv("LOG_BASENAME", "wd")  # ficheiro principal: wd.log
     retention_days = int(os.getenv("LOG_RETENTION_DAYS", "30"))
 
     os.makedirs(log_dir, exist_ok=True)
@@ -77,7 +79,7 @@ def setup_logging() -> None:
         delay=True,  # só abre o ficheiro no 1º write
         utc=False,  # usa hora local
     )
-    # Nome do ficheiro rodado: gsm.log.2025-09-12
+    # Nome do ficheiro rodado: wd.log.2025-09-12
     fileh.suffix = _DATE_SUFFIX
     fileh.setFormatter(formatter)
     fileh.addFilter(RequestIdFilter())
@@ -96,4 +98,4 @@ def setup_logging() -> None:
     # Purga por idade (garante “últimos 30 dias” mesmo que falte alguma rotação)
     removed = _purge_old_logs(log_dir, base_name, days=retention_days)
     if removed:
-        logging.getLogger("gsm.logging").info("purged %d old log file(s)", removed)
+        logging.getLogger("wd.logging").info("purged %d old log file(s)", removed)
