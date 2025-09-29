@@ -1,6 +1,8 @@
 from datetime import datetime
 from app.domains.prestashop.payments.types import PaymentMethod
-from app.domains.prestashop.payments.rules import classify_by_hours
+from app.shared.status import Status
+from .rules import classify_payment_staleness
+
 
 # Normalização de nomes (podes acrescentar à vontade)
 ALIASES = {
@@ -33,7 +35,7 @@ def raw_row_to_domain(
 
     last_dt = parse_local(str(row.get("last_payment_date", "")).strip(), tz)
     hours = float("inf") if last_dt is None else (now_dt - last_dt).total_seconds() / 3600.0
-    status = classify_by_hours(hours, warn_h, crit_h)
+    status = classify_payment_staleness(hours, warn_h, crit_h)
 
     return PaymentMethod(
         method=method,

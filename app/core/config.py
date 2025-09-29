@@ -28,8 +28,12 @@ class Settings(BaseSettings):
     PS_CHECK_PAYMENT_URL: str = "https://domain.com/__watchdogs/check_payments.php"
     PS_PAYMENTS_WARNING_HOURS: int = 48  # amarelo
     PS_PAYMENTS_CRITICAL_HOURS: int = 72  # vermelho
-    # Carriers
-
+    # --> Orders
+    PS_CHECK_ORDERS_URL: str = "https://domain.com/__watchdogs/check_orders.php"
+    PS_ORDERS_WARN_DS_STD: int = 2
+    PS_ORDERS_CRIT_DS_STD: int = 3
+    PS_ORDERS_WARN_DS_DROPSHIP: int = 3
+    PS_ORDERS_CRIT_DS_DROPSHIP: int = 5
     # External Services
 
 

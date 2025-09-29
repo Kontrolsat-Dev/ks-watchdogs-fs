@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Literal
+from app.shared.status import Status
 
-Status = Literal['ok', 'warning', 'critical']
-
-@dataclass
+@dataclass(slots=True)
 class PaymentMethod:
-    method:str
-    last_payment_at:datetime | None
-    hours_since_last:float
+    method: str
+    last_payment_at: datetime | None
+    hours_since_last: float
     status: Status

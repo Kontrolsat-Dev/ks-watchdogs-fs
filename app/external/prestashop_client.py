@@ -65,3 +65,16 @@ class PrestashopClient:
         if not isinstance(rows, list):
             raise RuntimeError(f"Unexpected response from PrestaShop API: {data!r}")
         return rows
+
+    def fetch_delayed_orders(self) -> list[dict]:
+        params = {"PHP_AUTH_USER": self.api_key}
+        headers = {"User-Agent": self.user_agent, "Accept": "application/json"}
+        resp = self._session.get(settings.PS_CHECK_ORDERS_URL, params=params,
+                                 headers=headers, timeout=(3, self.timeout),
+                                 verify=self._verify)
+        resp.raise_for_status()
+        data = resp.json()
+        rows = data if isinstance(data, list) else data.get("data", [])
+        if not isinstance(rows, list):
+            raise RuntimeError("Unexpected response for delayed orders")
+        return rows

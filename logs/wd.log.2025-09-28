@@ -1,0 +1,236 @@
+2025-09-28 02:19:50,665 INFO watchdogs.middleware [rid=ba097390a503] :: >> GET /
+2025-09-28 02:19:50,666 INFO watchdogs.middleware [rid=ba097390a503] :: << GET / -> 404 in 1.4ms
+2025-09-28 02:19:51,516 INFO watchdogs.middleware [rid=d7fdc2568712] :: >> GET /favicon.ico
+2025-09-28 02:19:51,517 INFO watchdogs.middleware [rid=d7fdc2568712] :: << GET /favicon.ico -> 404 in 0.9ms
+2025-09-28 02:19:59,506 INFO watchdogs.middleware [rid=1a4fc2961da0] :: >> GET /api/v1/prestashop/payments
+2025-09-28 02:19:59,514 INFO watchdogs.middleware [rid=1a4fc2961da0] :: << GET /api/v1/prestashop/payments -> 200 in 7.0ms
+2025-09-28 02:24:49,139 INFO watchdogs.middleware [rid=0bddbde0b36a] :: >> GET /api/v1/prestashop/payments
+2025-09-28 02:24:49,154 INFO watchdogs.middleware [rid=0bddbde0b36a] :: << GET /api/v1/prestashop/payments -> 200 in 14.9ms
+2025-09-28 02:26:28,323 INFO watchdogs.middleware [rid=ab1ad9b15bc7] :: >> GET /api/v1/prestashop/payments
+2025-09-28 02:26:28,336 INFO watchdogs.middleware [rid=ab1ad9b15bc7] :: << GET /api/v1/prestashop/payments -> 200 in 13.0ms
+2025-09-28 03:36:20,345 INFO watchdogs.middleware [rid=91ba7581357a] :: >> GET /
+2025-09-28 03:36:20,346 INFO watchdogs.middleware [rid=91ba7581357a] :: << GET / -> 404 in 1.1ms
+2025-09-28 03:36:21,269 INFO watchdogs.middleware [rid=5e2c0a2f89ba] :: >> GET /favicon.ico
+2025-09-28 03:36:21,269 INFO watchdogs.middleware [rid=5e2c0a2f89ba] :: << GET /favicon.ico -> 404 in 0.7ms
+2025-09-28 03:36:27,220 INFO watchdogs.middleware [rid=0a30af4402f7] :: >> GET /api/v1/prestashop/payments
+2025-09-28 03:36:27,231 INFO watchdogs.middleware [rid=0a30af4402f7] :: << GET /api/v1/prestashop/payments -> 200 in 10.3ms
+2025-09-28 20:43:21,876 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 20:43:21,879 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 20:43:21,879 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 20:43:21,879 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 20:43:22,515 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
+2025-09-28 20:43:27,548 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 20:43:27,550 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 20:43:27,550 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 20:43:27,550 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 20:43:35,500 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
+2025-09-28 20:45:39,960 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 20:45:39,961 INFO workers.scheduler [rid=-] :: scheduled job prestashop.payments every 20s
+2025-09-28 20:45:39,961 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 20:45:39,963 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 20:45:39,963 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 20:45:59,962 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 20:46:19 BST)" (scheduled at 2025-09-28 20:45:59.960604+01:00)
+2025-09-28 20:45:59,966 INFO wd.jobs.prestashop [rid=-] :: ingest_payments tick
+2025-09-28 20:45:59,966 INFO wd.jobs.prestashop [rid=-] :: ingest_payments done in 0.2ms
+2025-09-28 20:45:59,967 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 20:46:19 BST)" executed successfully
+2025-09-28 20:46:19,966 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 20:46:39 BST)" (scheduled at 2025-09-28 20:46:19.960604+01:00)
+2025-09-28 20:46:19,966 INFO wd.jobs.prestashop [rid=-] :: ingest_payments tick
+2025-09-28 20:46:19,966 INFO wd.jobs.prestashop [rid=-] :: ingest_payments done in 0.3ms
+2025-09-28 20:46:19,967 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 20:46:39 BST)" executed successfully
+2025-09-28 20:46:25,457 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
+2025-09-28 20:46:46,098 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 20:46:46,098 INFO workers.scheduler [rid=-] :: scheduled job prestashop.payments every 20s
+2025-09-28 20:46:46,099 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 20:46:46,099 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 20:46:46,099 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 20:47:06,101 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 20:47:26 BST)" (scheduled at 2025-09-28 20:47:06.097356+01:00)
+2025-09-28 20:47:06,111 ERROR apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 20:47:26 BST)" raised an exception
+Traceback (most recent call last):
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\apscheduler\executors\base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\workers\jobs\prestashop_payments.py", line 4, in run
+    from app.services.commands.prestashop.ingest_payments import run as usecase_run
+  File "D:\Programacao\Projetos\Watchdogs\app\services\commands\prestashop\ingest_payments.py", line 2, in <module>
+    from app.repos.shared.runs_write import RunsWriteRepo
+ImportError: cannot import name 'RunsWriteRepo' from 'app.repos.shared.runs_write' (D:\Programacao\Projetos\Watchdogs\app\repos\shared\runs_write.py)
+2025-09-28 20:47:26,098 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 20:47:46 BST)" (scheduled at 2025-09-28 20:47:26.097356+01:00)
+2025-09-28 20:47:26,099 ERROR apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 20:47:46 BST)" raised an exception
+Traceback (most recent call last):
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\apscheduler\executors\base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\workers\jobs\prestashop_payments.py", line 4, in run
+    from app.services.commands.prestashop.ingest_payments import run as usecase_run
+  File "D:\Programacao\Projetos\Watchdogs\app\services\commands\prestashop\ingest_payments.py", line 2, in <module>
+    from app.repos.shared.runs_write import RunsWriteRepo
+ImportError: cannot import name 'RunsWriteRepo' from 'app.repos.shared.runs_write' (D:\Programacao\Projetos\Watchdogs\app\repos\shared\runs_write.py)
+2025-09-28 20:47:30,445 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
+2025-09-28 20:56:32,552 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 20:56:32,552 INFO workers.scheduler [rid=-] :: scheduled job prestashop.payments every 20s
+2025-09-28 20:56:32,553 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 20:56:32,554 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 20:56:32,554 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 20:56:52,553 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 20:57:12 BST)" (scheduled at 2025-09-28 20:56:52.552055+01:00)
+2025-09-28 20:56:52,562 ERROR apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 20:57:12 BST)" raised an exception
+Traceback (most recent call last):
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\apscheduler\executors\base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\workers\jobs\prestashop_payments.py", line 4, in run
+    from app.services.commands.prestashop.ingest_payments import run as usecase_run
+  File "D:\Programacao\Projetos\Watchdogs\app\services\commands\prestashop\ingest_payments.py", line 2, in <module>
+    from app.repos.shared.runs_write import RunsWriteRepo
+ImportError: cannot import name 'RunsWriteRepo' from 'app.repos.shared.runs_write' (D:\Programacao\Projetos\Watchdogs\app\repos\shared\runs_write.py)
+2025-09-28 20:56:54,477 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
+2025-09-28 21:01:06,701 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 21:01:06,701 INFO workers.scheduler [rid=-] :: scheduled job prestashop.payments every 20s
+2025-09-28 21:01:06,702 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 21:01:06,702 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 21:01:06,703 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 21:01:26,704 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:01:46 BST)" (scheduled at 2025-09-28 21:01:26.701502+01:00)
+2025-09-28 21:01:26,885 ERROR wd.jobs.prestashop [rid=-] :: prestashop.payments failed: 'Settings' object has no attribute 'PS_TIMEOUT'
+Traceback (most recent call last):
+  File "D:\Programacao\Projetos\Watchdogs\app\services\commands\prestashop\ingest_payments.py", line 16, in run
+    client = PrestashopClient()
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\app\external\prestashop_client.py", line 20, in __init__
+    self.timeout = timeout or settings.PS_TIMEOUT
+                              ^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\pydantic\main.py", line 991, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'Settings' object has no attribute 'PS_TIMEOUT'. Did you mean: 'PS_TIMEOUT_S'?
+2025-09-28 21:01:26,939 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:01:46 BST)" executed successfully
+2025-09-28 21:01:30,332 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
+2025-09-28 21:01:51,309 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 21:01:51,309 INFO workers.scheduler [rid=-] :: scheduled job prestashop.payments every 20s
+2025-09-28 21:01:51,310 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 21:01:51,311 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 21:01:51,311 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 21:02:11,310 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:02:31 BST)" (scheduled at 2025-09-28 21:02:11.309741+01:00)
+2025-09-28 21:02:11,498 ERROR wd.jobs.prestashop [rid=-] :: prestashop.payments failed: HTTPSConnectionPool(host='www.kontrolsat.com', port=443): Max retries exceeded with url: /__watchdogs/check_payments.php?PHP_AUTH_USER=ZXPJRR2W4LG3S3DMEWYAZSMNHUVXW2II (Caused by SSLError(SSLError(0, 'unknown error (_ssl.c:3076)')))
+Traceback (most recent call last):
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\urllib3\connectionpool.py", line 464, in _make_request
+    self._validate_conn(conn)
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\urllib3\connectionpool.py", line 1093, in _validate_conn
+    conn.connect()
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\urllib3\connection.py", line 790, in connect
+    sock_and_verified = _ssl_wrap_socket_and_match_hostname(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\urllib3\connection.py", line 922, in _ssl_wrap_socket_and_match_hostname
+    context = create_urllib3_context(
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\urllib3\util\ssl_.py", line 298, in create_urllib3_context
+    context = SSLContext(PROTOCOL_TLS_CLIENT)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\usuario\AppData\Local\Programs\Python\Python312\Lib\ssl.py", line 438, in __new__
+    self = _SSLContext.__new__(cls, protocol)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ssl.SSLError: unknown error (_ssl.c:3076)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\urllib3\connectionpool.py", line 488, in _make_request
+    raise new_e
+urllib3.exceptions.SSLError: unknown error (_ssl.c:3076)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\requests\adapters.py", line 644, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='www.kontrolsat.com', port=443): Max retries exceeded with url: /__watchdogs/check_payments.php?PHP_AUTH_USER=ZXPJRR2W4LG3S3DMEWYAZSMNHUVXW2II (Caused by SSLError(SSLError(0, 'unknown error (_ssl.c:3076)')))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Programacao\Projetos\Watchdogs\app\services\commands\prestashop\ingest_payments.py", line 17, in run
+    rows = client.fetch_payments()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\app\external\prestashop_client.py", line 26, in fetch_payments
+    r = requests.get(self.payments_url, params=params, headers=headers)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\requests\adapters.py", line 675, in send
+    raise SSLError(e, request=request)
+requests.exceptions.SSLError: HTTPSConnectionPool(host='www.kontrolsat.com', port=443): Max retries exceeded with url: /__watchdogs/check_payments.php?PHP_AUTH_USER=ZXPJRR2W4LG3S3DMEWYAZSMNHUVXW2II (Caused by SSLError(SSLError(0, 'unknown error (_ssl.c:3076)')))
+2025-09-28 21:02:11,616 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:02:31 BST)" executed successfully
+2025-09-28 21:02:31,319 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:02:51 BST)" (scheduled at 2025-09-28 21:02:31.309741+01:00)
+2025-09-28 21:02:34,816 INFO wd.jobs.prestashop [rid=-] :: prestashop.payments fetched 14 rows
+2025-09-28 21:02:34,823 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:02:51 BST)" executed successfully
+2025-09-28 21:02:42,639 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
+2025-09-28 21:08:45,918 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 21:08:45,919 INFO workers.scheduler [rid=-] :: scheduled job prestashop.payments every 20s
+2025-09-28 21:08:45,920 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 21:08:45,920 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 21:08:45,920 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 21:09:05,920 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:09:25 BST)" (scheduled at 2025-09-28 21:09:05.918697+01:00)
+2025-09-28 21:09:06,098 WARNING urllib3.connectionpool [rid=-] :: Retrying (Retry(total=3, connect=4, read=2, redirect=None, status=None)) after connection broken by 'SSLError(SSLError(0, 'unknown error (_ssl.c:3076)'))': /__watchdogs/check_payments.php?PHP_AUTH_USER=ZXPJRR2W4LG3S3DMEWYAZSMNHUVXW2II
+2025-09-28 21:09:09,417 INFO wd.jobs.prestashop [rid=-] :: prestashop.payments fetched 14 rows
+2025-09-28 21:09:09,431 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:09:25 BST)" executed successfully
+2025-09-28 21:09:18,565 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
+2025-09-28 21:17:50,837 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 21:17:50,838 INFO workers.scheduler [rid=-] :: scheduled job prestashop.payments every 20s
+2025-09-28 21:17:50,839 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 21:17:50,839 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 21:17:50,839 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 21:18:10,841 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:18:30 BST)" (scheduled at 2025-09-28 21:18:10.837100+01:00)
+2025-09-28 21:18:10,858 ERROR apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:18:30 BST)" raised an exception
+Traceback (most recent call last):
+  File "D:\Programacao\Projetos\Watchdogs\.venv\Lib\site-packages\apscheduler\executors\base.py", line 131, in run_job
+    retval = job.func(*job.args, **job.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Programacao\Projetos\Watchdogs\workers\jobs\prestashop_payments.py", line 4, in run
+    from app.services.commands.prestashop.ingest_payments import run as usecase_run
+  File "D:\Programacao\Projetos\Watchdogs\app\services\commands\prestashop\ingest_payments.py", line 3, in <module>
+    from app.repos.preestashop.payments_write import PaymentsWriteRepo
+ModuleNotFoundError: No module named 'app.repos.preestashop'
+2025-09-28 21:18:22,734 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
+2025-09-28 21:19:43,244 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 21:19:43,244 INFO workers.scheduler [rid=-] :: scheduled job prestashop.payments every 20s
+2025-09-28 21:19:43,245 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 21:19:43,245 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 21:19:43,245 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 21:20:03,246 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:20:23 BST)" (scheduled at 2025-09-28 21:20:03.243830+01:00)
+2025-09-28 21:20:04,176 WARNING urllib3.connectionpool [rid=-] :: Retrying (Retry(total=3, connect=4, read=2, redirect=None, status=None)) after connection broken by 'SSLError(SSLError(0, 'unknown error (_ssl.c:3076)'))': /__watchdogs/check_payments.php?PHP_AUTH_USER=ZXPJRR2W4LG3S3DMEWYAZSMNHUVXW2II
+2025-09-28 21:20:04,829 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:20:23 BST)" executed successfully
+2025-09-28 21:20:23,250 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:20:43 BST)" (scheduled at 2025-09-28 21:20:23.243830+01:00)
+2025-09-28 21:20:24,187 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:20:43 BST)" executed successfully
+2025-09-28 21:20:43,245 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:21:03 BST)" (scheduled at 2025-09-28 21:20:43.243830+01:00)
+2025-09-28 21:20:43,691 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:21:03 BST)" executed successfully
+2025-09-28 21:21:03,252 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:21:23 BST)" (scheduled at 2025-09-28 21:21:03.243830+01:00)
+2025-09-28 21:21:04,500 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:21:23 BST)" executed successfully
+2025-09-28 21:21:23,245 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:21:43 BST)" (scheduled at 2025-09-28 21:21:23.243830+01:00)
+2025-09-28 21:21:23,719 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:21:43 BST)" executed successfully
+2025-09-28 21:21:39,365 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
+2025-09-28 21:31:48,466 INFO apscheduler.scheduler [rid=-] :: Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-28 21:31:48,466 INFO workers.scheduler [rid=-] :: scheduled job prestashop.payments every 20s
+2025-09-28 21:31:48,467 INFO apscheduler.scheduler [rid=-] :: Added job "run" to job store "default"
+2025-09-28 21:31:48,467 INFO apscheduler.scheduler [rid=-] :: Scheduler started
+2025-09-28 21:31:48,468 INFO worker [rid=-] :: worker started; scheduler running
+2025-09-28 21:32:08,468 INFO apscheduler.executors.default [rid=-] :: Running job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:32:28 BST)" (scheduled at 2025-09-28 21:32:08.466567+01:00)
+2025-09-28 21:32:09,470 WARNING urllib3.connectionpool [rid=-] :: Retrying (Retry(total=3, connect=4, read=2, redirect=None, status=None)) after connection broken by 'SSLError(SSLError(0, 'unknown error (_ssl.c:3076)'))': /__watchdogs/check_payments.php?PHP_AUTH_USER=ZXPJRR2W4LG3S3DMEWYAZSMNHUVXW2II
+2025-09-28 21:32:10,849 INFO apscheduler.executors.default [rid=-] :: Job "run (trigger: interval[0:00:20], next run at: 2025-09-28 21:32:28 BST)" executed successfully
+2025-09-28 21:32:18,626 INFO worker [rid=-] :: worker stopping (KeyboardInterrupt)
