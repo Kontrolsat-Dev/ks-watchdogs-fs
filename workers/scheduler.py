@@ -1,20 +1,25 @@
 # workers/scheduler.py
-import logging
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
-log = logging.getLogger("workers.scheduler")
+from datetime import datetime, timedelta
 
 def register_jobs(sched: AsyncIOScheduler, db_session_factory):
-    from workers.jobs.prestashop.prestashop_payments import run as ps_run
+    from workers.jobs.prestashop.prestashop_payments import run as ps_payments_run
+    from workers.jobs.prestashop.prestashop_orders_delayed import run as ps_orders_run
 
+    # Pagamentos
     sched.add_job(
-        ps_run,
-        "interval",
-        seconds=20,  # << temporariamente baixo p/ testar; depois volta a minutes=5
+        ps_payments_run, "interval",
+        minutes=1, next_run_time=datetime.now()+timedelta(seconds=2),
         id="prestashop.payments",
         kwargs={"db_session_factory": db_session_factory},
-        max_instances=1,
-        coalesce=True,
-        replace_existing=True,
+        max_instances=1, coalesce=True, replace_existing=True,
     )
-    log.info("scheduled job %s every %s", "prestashop.payments", "20s")
+
+    # Encomendas atrasadas
+    sched.add_job(
+        ps_orders_run, "interval",
+        minutes=5, next_run_time=datetime.now()+timedelta(seconds=5),
+        id="prestashop.orders_delayed",
+        kwargs={"db_session_factory": db_session_factory},
+        max_instances=1, coalesce=True, replace_existing=True,
+    )

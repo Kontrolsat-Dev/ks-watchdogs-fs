@@ -2,7 +2,7 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from workers.scheduler import register_jobs
 from app.core.db import SessionLocal
-from app.core.logging import setup_logging  # <<
+from app.core.logging import setup_logging
 
 import logging
 
