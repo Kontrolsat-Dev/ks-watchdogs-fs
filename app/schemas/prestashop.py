@@ -1,7 +1,9 @@
 from pydantic import BaseModel, ConfigDict
 from typing import List
-from app.shared.status import Status
+from app.shared.status import Status, StatusLiteral
 
+
+# Payments
 class PaymentMethodDTO(BaseModel):
     model_config = ConfigDict(use_enum_values=True)  # exporta "ok"/"warning"/"critical"
     method: str
@@ -15,6 +17,7 @@ class PaymentsListDTO(BaseModel):
     count: int
     methods: List[PaymentMethodDTO]
 
+# Delayed Orders
 class DelayedOrderDTO(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
     id_order: int
@@ -31,3 +34,22 @@ class DelayedOrdersListDTO(BaseModel):
     ok: bool
     count: int
     orders: List[DelayedOrderDTO]
+
+# EOL Products
+class EOLProductDTO(BaseModel):
+    id_product: int
+    name: str
+    reference: str
+    ean13: str
+    upc: str
+    price: float
+    last_in_stock_at: str | None
+    days_since: int
+    status: StatusLiteral
+    observed_at: str
+
+class EOLProductsListDTO(BaseModel):
+    ok: bool
+    count: int
+    counts: dict
+    items: List[EOLProductDTO]

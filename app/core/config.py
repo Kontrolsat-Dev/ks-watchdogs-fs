@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     PS_ORDERS_CRIT_DS_STD: int = 3
     PS_ORDERS_WARN_DS_DROPSHIP: int = 3
     PS_ORDERS_CRIT_DS_DROPSHIP: int = 5
+    # --> EOL Products
+    PS_CHECK_EOL_PRODUCTS: str = "https://domain.com/__watchdogs/check_eol_products.php"
+    PS_EOL_WARN_DAYS: int = 30
+    PS_EOL_CRIT_DAYS: int = 60
     # External Services
 
 

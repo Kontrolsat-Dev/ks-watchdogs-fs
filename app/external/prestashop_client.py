@@ -8,16 +8,14 @@ from app.core.config import settings
 
 class PrestashopClient:
     def __init__(
-        self,
-        base_url: str | None = None,
-        payments_url: str | None = None,
-        api_key: str | None = None,
-        timeout: int | None = None,
-        user_agent: str | None = None,
+            self,
+            base_url: str | None = None,
+            payments_url: str | None = None,
+            api_key: str | None = None,
+            timeout: int | None = None,
+            user_agent: str | None = None,
     ) -> None:
-        # Endpoints
         self.base_url = base_url or settings.PS_BASE_URL
-        self.payments_url = payments_url or settings.PS_CHECK_PAYMENT_URL
         # Sec
         self.api_key = api_key or settings.PS_API_KEY
         self.user_agent = user_agent or settings.PS_USER_AGENT
@@ -38,11 +36,12 @@ class PrestashopClient:
         adapter = HTTPAdapter(max_retries=retries, pool_connections=4, pool_maxsize=8)
         self._session.mount("https://", adapter)
         self._session.mount("http://", adapter)
-
-        # Verify TLS (permite override em DEV com PS_VERIFY_SSL=false)
         verify_env = str(getattr(settings, "PS_VERIFY_SSL", "true")).lower()
         self._verify = certifi.where() if verify_env != "false" else False
 
+    # -------------------------------
+    # Payments
+    # -------------------------------
     def fetch_payments(self) -> list[dict]:
         params = {"PHP_AUTH_USER": self.api_key}
         headers = {
@@ -52,7 +51,7 @@ class PrestashopClient:
 
         # timeout (connect, read)
         resp = self._session.get(
-            self.payments_url,
+            settings.PS_CHECK_PAYMENT_URL,
             params=params,
             headers=headers,
             timeout=(3, self.timeout),
@@ -66,6 +65,9 @@ class PrestashopClient:
             raise RuntimeError(f"Unexpected response from PrestaShop API: {data!r}")
         return rows
 
+    # -------------------------------
+    # Delayed orders
+    # -------------------------------
     def fetch_delayed_orders(self) -> list[dict]:
         params = {"PHP_AUTH_USER": self.api_key}
         headers = {"User-Agent": self.user_agent, "Accept": "application/json"}
@@ -87,3 +89,50 @@ class PrestashopClient:
 
         return rows
 
+    # -------------------------------
+    # EOL Products
+    # -------------------------------
+    def fetch_eol_products(self) -> list[dict]:
+        params = {"PHP_AUTH_USER": self.api_key}
+        headers = {
+            "User-Agent": self.user_agent,
+            "Accept": "application/json",
+        }
+
+        resp = self._session.get(
+            settings.PS_CHECK_EOL_PRODUCTS,
+            params=params,
+            headers=headers,
+            timeout=(3, self.timeout),
+            verify=self._verify,
+        )
+        resp.raise_for_status()
+        data = resp.json() or {}
+
+        # formato típico: {"counts": {...}, "warning": [...], "critical": [...]}
+        if isinstance(data, dict):
+            rows: list[dict] = []
+
+            for key in ("warning", "critical"):
+                part = data.get(key)
+                if isinstance(part, list):
+                    # garante "severity" quando vier omitido
+                    for it in part:
+                        if isinstance(it, dict) and "severity" not in it:
+                            it["severity"] = key
+                    rows.extend(part)
+
+            # fallbacks (se o endpoint algum dia devolver outra chave)
+            if not rows:
+                rows = data.get("items") or data.get("data") or []
+
+            if not isinstance(rows, list):
+                raise RuntimeError(f"Unexpected EOL products response type: {type(rows)}")
+
+            return rows
+
+        # fallback raríssimo: resposta é uma lista já plana
+        if isinstance(data, list):
+            return data
+
+        raise RuntimeError(f"Unexpected EOL products response: {data!r}")

@@ -1,44 +1,66 @@
 from sqlalchemy import select, func, case, desc
+from sqlalchemy.orm import Session
 from app.models.prestashop import PaymentMethodStatus as PMS
 
 class PaymentsReadRepo:
-    def __init__(self, db):
+    def __init__(self, db: Session):
         self.db = db
 
     def latest_by_method(self) -> list[dict]:
-        # subquery: último observed_at por método
         subq = (
             select(
-                PMS.method.label("m"),
-                func.max(PMS.observed_at).label("max_obs"),
+                PMS.id.label("id"),
+                PMS.method.label("method"),
+                PMS.last_payment_at.label("last_payment_at"),
+                PMS.hours_since_last.label("hours_since_last"),
+                PMS.status.label("status"),
+                PMS.observed_at.label("observed_at"),
+                func.row_number()
+                .over(
+                    partition_by=PMS.method,
+                    order_by=(desc(PMS.observed_at), desc(PMS.last_payment_at), desc(PMS.id)),
+                )
+                .label("rn"),
             )
-            .group_by(PMS.method)
-            .subquery()
-        )
+        ).subquery("rn_per_method")
 
-        # CASE para ordenar severidade: critical (0), warning (1), ok (2)
+        latest = (
+            select(
+                subq.c.method,
+                subq.c.last_payment_at,
+                subq.c.hours_since_last,
+                subq.c.status,
+                subq.c.observed_at,
+            )
+            .where(subq.c.rn == 1)
+        ).subquery("latest")
+
         sev_case = case(
-            (PMS.status == "critical", 0),
-            (PMS.status == "warning", 1),
+            (latest.c.status == "critical", 0),
+            (latest.c.status == "warning", 1),
             else_=2,
         ).label("sev_rank")
 
-        # join para obter a linha completa mais recente por método
         q = (
-            select(PMS, sev_case)
-            .join(subq, (PMS.method == subq.c.m) & (PMS.observed_at == subq.c.max_obs))
-            .order_by(sev_case, desc(PMS.hours_since_last))
+            select(
+                latest.c.method,
+                latest.c.last_payment_at,
+                latest.c.hours_since_last,
+                latest.c.status,
+                latest.c.observed_at,
+                sev_case,  # opcional ter na projeção; ajuda a depurar/ordenar
+            )
+            .order_by(sev_case, desc(latest.c.hours_since_last))
         )
 
-        rows = self.db.execute(q).all()  # rows: list[Row(PMS, sev_rank)]
-        out: list[dict] = []
-        for row in rows:
-            pms = row[0]  # PaymentMethodStatus
+        rows = self.db.execute(q).all()
+        out = []
+        for method, last_payment_at, hours_since_last, status, observed_at, _sev in rows:
             out.append({
-                "method": pms.method,
-                "last_payment_at": pms.last_payment_at,
-                "hours_since_last": pms.hours_since_last or 0.0,
-                "status": pms.status,
-                "observed_at": pms.observed_at,
+                "method": method,
+                "last_payment_at": last_payment_at,
+                "hours_since_last": hours_since_last or 0.0,
+                "status": status,
+                "observed_at": observed_at,
             })
         return out
