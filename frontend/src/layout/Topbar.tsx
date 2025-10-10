@@ -1,5 +1,5 @@
 // src/layout/Topbar.tsx
-import { useHealthz } from "@/features/system/queries"
+import {useHealthz} from "@/features/system/healthz/queries.ts";
 import { StatusDot } from "@/components/feedback/StatusDot"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -8,14 +8,15 @@ import {useTheme} from "@/providers/theme-provider";
 
 export default function Topbar() {
     const { data, isFetching, refetch, isError } = useHealthz()
-    const { theme, setTheme } = useTheme();
-    const isDark = theme === "dark";
-
     const status =
         isError ? "critical"
             : !data ? "warning"
                 : data.status?.toLowerCase()
+    const { theme, setTheme } = useTheme();
+    const isDark = theme === "dark";
 
+
+    // const latencyMs = data?.elapsedMs ? Math.round(data.elapsedMs) : null
     const latencyMs = data?.elapsedMs ? Math.round(data.elapsedMs) : null
 
     return (

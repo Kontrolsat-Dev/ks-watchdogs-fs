@@ -1,18 +1,11 @@
-import { StrictMode } from "react"
-import { createRoot } from "react-dom/client"
-import "./index.css"
-import AppRouter from "@/router"
-import { QueryProvider } from "@/providers/query-client"
-import { ThemeProvider } from "@/providers/theme-provider"
-import { ToasterProvider } from "@/providers/toaster-provider"
+// src/main.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./app";
+import "./index.css";
 
-createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-        <ThemeProvider defaultTheme="system" storageKey="watchdogs-theme">
-            <QueryProvider>
-                <ToasterProvider />
-                <AppRouter />
-            </QueryProvider>
-        </ThemeProvider>
-    </StrictMode>
-)
+ReactDOM.createRoot(document.getElementById("root")!).render(
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>
+);

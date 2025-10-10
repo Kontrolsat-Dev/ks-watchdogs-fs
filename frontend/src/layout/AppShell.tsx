@@ -1,7 +1,6 @@
 // src/layout/AppShell.tsx
 import Topbar from "@/layout/Topbar"
 import {Outlet, NavLink as RRLink} from "react-router-dom"
-import {paths} from "@/lib/paths"
 import {cn} from "@/lib/utils"
 import {Separator} from "@/components/ui/separator.tsx";
 
@@ -12,7 +11,7 @@ export default function AppShell() {
                 <div className="p-4">
                     <div className="font-semibold mb-4">Watchdogs</div>
                     <nav className="grid gap-1">
-                        <NavLink to={paths.home}>Dashboard</NavLink>
+                        <NavLink to={"/"}>Dashboard</NavLink>
                         <Separator/>
                         <NavLink to={"/payments"}>Métodos de Pagamento</NavLink>
                         <NavLink to={"/orders/delayed"}>Encomendas Atrasadas</NavLink>
