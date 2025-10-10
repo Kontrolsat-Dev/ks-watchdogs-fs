@@ -1,12 +1,16 @@
-// src/layout/Topbar.tsx
 import { useHealthz } from "@/features/system/healthz/queries.ts";
 import { StatusDot } from "@/components/feedback/StatusDot";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Loader2, Moon, RefreshCcw, Sun } from "lucide-react";
+import { Loader2, Moon, RefreshCcw, Sun, Menu, X } from "lucide-react";
 import { useTheme } from "@/providers/theme-provider";
 
-export default function Topbar() {
+type Props = {
+  onToggleSidebar: () => void;
+  isSidebarOpen: boolean;
+};
+
+export default function Topbar({ onToggleSidebar, isSidebarOpen }: Props) {
   const { data, isFetching, refetch, isError } = useHealthz();
   const status = isError
     ? "critical"
@@ -15,20 +19,34 @@ export default function Topbar() {
     : data.status?.toLowerCase();
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
-
-  // const latencyMs = data?.elapsedMs ? Math.round(data.elapsedMs) : null
   const latencyMs = data?.elapsedMs ? Math.round(data.elapsedMs) : null;
 
   return (
     <div className="sticky top-0 z-10 mb-4 border-b bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40">
       <div className="flex h-14 items-center justify-between px-4">
+        {/* Esquerda: btn gaveta + título */}
         <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onToggleSidebar}
+            aria-label={isSidebarOpen ? "Fechar navegação" : "Abrir navegação"}
+            className="md:hidden"
+          >
+            {isSidebarOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </Button>
+
           <div className="text-sm font-medium">Watchdogs</div>
           <span className="text-xs text-muted-foreground">
             Sistema de Monitorização de Ecommerce
           </span>
         </div>
 
+        {/* Direita: status + ações */}
         <div className="flex items-center gap-3">
           <div
             className={cn(
