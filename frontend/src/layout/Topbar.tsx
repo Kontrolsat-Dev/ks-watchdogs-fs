@@ -3,10 +3,13 @@ import { useHealthz } from "@/features/system/queries"
 import { StatusDot } from "@/components/feedback/StatusDot"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Loader2, RefreshCcw } from "lucide-react"
+import {Loader2, Moon, RefreshCcw, Sun} from "lucide-react"
+import {useTheme} from "@/providers/theme-provider";
 
 export default function Topbar() {
     const { data, isFetching, refetch, isError } = useHealthz()
+    const { theme, setTheme } = useTheme();
+    const isDark = theme === "dark";
 
     const status =
         isError ? "critical"
@@ -49,6 +52,20 @@ export default function Topbar() {
                     <Button variant="outline" size="sm" onClick={() => refetch()} aria-label="Atualizar estado">
                         <RefreshCcw className="h-4 w-4" />
                     </Button>
+
+                    <div
+                        onClick={() => setTheme(isDark ? "light" : "dark")}
+                        className={`flex items-center cursor-pointer transition-transform duration-500 ${
+                            isDark ? "rotate-180" : "rotate-0"
+                        }`}
+                    >
+                        {isDark ? (
+                            <Sun className="h-6 w-6 text-yellow-500 rotate-0 transition-all" />
+                        ) : (
+                            <Moon className="h-6 w-6 text-blue-500 rotate-0 transition-all" />
+                        )}
+                        <span className="sr-only">Toggle theme</span>
+                    </div>
                 </div>
             </div>
         </div>
