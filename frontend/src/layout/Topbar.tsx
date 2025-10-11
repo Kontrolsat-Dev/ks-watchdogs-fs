@@ -40,7 +40,7 @@ export default function Topbar({
   const latencyMs = data?.elapsedMs ? Math.round(data.elapsedMs) : null;
 
   return (
-    <div className="sticky top-0 z-10 h-14 mb-4 border-b bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40">
+    <div className="sticky top-0 z-10 h-14 border-b bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40">
       <div className="flex h-14 items-center justify-between px-4">
         {/* Esquerda: botões + título */}
         <div className="flex items-center gap-2">

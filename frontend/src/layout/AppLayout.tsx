@@ -38,7 +38,7 @@ const AppLayout: React.FC = () => {
             onToggleCollapse={() => setCollapsed((v) => !v)}
             onToggleMobile={() => setMobileOpen((v) => !v)}
           />
-          <main className="flex-1 overflow-auto px-8 pt-1 pb-10">
+          <main className="flex-1 overflow-auto px-8 pt-5 pb-10">
             <Outlet />
           </main>
         </div>
