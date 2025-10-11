@@ -10,7 +10,7 @@ import AppLayout from "./layout/AppLayout";
 import HomePage from "@/features/home";
 // --- Orders
 import DelayedOrdersPage from "@/features/orders/delayed";
-// import PaymentsPage from "@/features/payments"; // exemplos
+import PaymentsPage from "@/features/payments";
 
 // import ProductsEolPage from "@/features/products/Eol";
 
@@ -37,7 +37,7 @@ export default function App() {
               <Route path="/" element={<HomePage />} />
               {/* Orders  */}
               <Route path="/orders/delayed" element={<DelayedOrdersPage />} />
-              {/* <Route path="/payments" element={<PaymentsPage />} /> */}
+              <Route path="/payments" element={<PaymentsPage />} />
               {/* <Route path="/products/eol" element={<ProductsEolPage />} /> */}
             </Route>
           </Routes>

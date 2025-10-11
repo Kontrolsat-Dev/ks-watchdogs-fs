@@ -34,38 +34,9 @@ import LoadingDelayedOrders from "./components/loading-delayed-orders";
 import LevelBadge from "./components/level-badge";
 import DropshipBadge from "./components/dropship-badge";
 import { RefreshCcw, Search } from "lucide-react";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
-// Helpers
-function formatDate(iso?: string) {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  return new Intl.DateTimeFormat("pt-PT", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(d);
-}
-
-function timeAgo(iso?: string) {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  const diffMs = Date.now() - d.getTime();
-  const sec = Math.round(diffMs / 1000);
-  const abs = Math.abs(sec);
-  const rtf = new Intl.RelativeTimeFormat("pt-PT", { numeric: "auto" });
-
-  if (abs < 60) return rtf.format(-sec, "second");
-  const min = Math.round(sec / 60);
-  if (Math.abs(min) < 60) return rtf.format(-min, "minute");
-  const hrs = Math.round(min / 60);
-  if (Math.abs(hrs) < 24) return rtf.format(-hrs, "hour");
-  const days = Math.round(hrs / 24);
-  return rtf.format(-days, "day");
-}
+import FlashError from "@/components/data/flash-error";
+import { formatDate, timeAgo } from "@/helpers/time";
 
 export default function OrdersDelayedPage() {
   const { data, isFetching, refetch, isError } = useDelayedOrders() as {
@@ -113,23 +84,16 @@ export default function OrdersDelayedPage() {
 
   // Estados de erro/loading
   if (isError) {
-    toast.error("Erro ao carregar encomendas", {
-      id: "orders-delayed-error",
-      description:
-        "Não foi possível carregar os dados das encomendas atrasadas.",
-    });
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Encomendas com Atraso</CardTitle>
-          <CardDescription>Não foi possível carregar os dados.</CardDescription>
-        </CardHeader>
-        <CardContent className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => refetch()}>
-            Tentar novamente
-          </Button>
-        </CardContent>
-      </Card>
+      <FlashError
+        flashId="orders-delayed-error"
+        flashTitle="Erro ao carregar encomendas"
+        flashMessage="Não foi possível carregar os dados das encomendas atrasadas."
+        cardTitle="Encomendas com Atraso"
+        cardDescription="Não foi possível carregar os dados."
+        cardButtonAction={() => refetch()}
+        cardButtonText="Tentar novamente"
+      />
     );
   }
 
