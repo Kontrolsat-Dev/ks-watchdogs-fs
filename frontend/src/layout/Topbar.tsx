@@ -46,7 +46,7 @@ export default function Topbar({
         <div className="flex items-center gap-2">
           {/* Mobile: abrir/fechar gaveta */}
           <Button
-            variant="outline"
+            variant="link"
             size="icon"
             onClick={onToggleMobile}
             aria-label={isSidebarOpen ? "Fechar navegação" : "Abrir navegação"}
@@ -61,7 +61,7 @@ export default function Topbar({
 
           {/* Desktop: colapsar/expandir sidebar */}
           <Button
-            variant="outline"
+            variant="link"
             size="icon"
             onClick={onToggleCollapse}
             aria-label={collapsed ? "Expandir navegação" : "Colapsar navegação"}
@@ -121,7 +121,7 @@ export default function Topbar({
 
           {/* Refresh */}
           <Button
-            variant="outline"
+            variant="link"
             size="sm"
             onClick={() => refetch()}
             aria-label="Atualizar estado"

@@ -63,7 +63,7 @@ const Sidebar: React.FC<Props> = ({ collapsed, mobileOpen, onCloseMobile }) => {
     <aside
       className={cn(
         // base
-        "fixed md:static inset-y-0 left-0 z-40 h-full md:h-screen border-r transition-all duration-200 ease-in-out",
+        "fixed md:static inset-y-0 left-0 z-40 h-full md:h-screen border-r bg-background/80 supports-[backdrop-filter]:bg-background/80 transition-all duration-200 ease-in-out",
         // larguras
         "w-72 md:w-64", // mobile sempre w-72; desktop padrão w-64
         collapsed && "md:w-16", // se colapsado, desktop fica w-16
@@ -75,10 +75,17 @@ const Sidebar: React.FC<Props> = ({ collapsed, mobileOpen, onCloseMobile }) => {
       }
     >
       {/* Cabeçalho */}
-      <div className="h-14 px-3 flex items-center gap-2 border-b">
-        <img src="/logo.png" alt="watchdogs" className="h-5 w-5" />
+      <div className="h-14 px-3 flex items-center gap-3 border-b">
+        <img
+          src="/logo.png"
+          alt="watchdogs"
+          className={cn("h-5 w-5 ms-2", collapsed && "md:ms-3")}
+        />
         <span
-          className={cn("font-semibold truncate", collapsed && "md:hidden")}
+          className={cn(
+            "font-semibold tracking-wider truncate text-lg",
+            collapsed && "md:hidden"
+          )}
         >
           Watchdogs
         </span>
@@ -104,7 +111,7 @@ const Sidebar: React.FC<Props> = ({ collapsed, mobileOpen, onCloseMobile }) => {
                 <div className="flex items-center gap-2">
                   <Icon className="h-5 w-5" />
                   {!collapsed && (
-                    <h2 className="text-lg font-medium">{name}</h2>
+                    <h2 className="text-md font-medium">{name}</h2>
                   )}
                 </div>
 
