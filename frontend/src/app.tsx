@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { ToasterProvider } from "@/providers/toaster-provider";
 import HomePage from "@/features/home";
-import AppShell from "@/layout/AppShell";
+import AppLayout from "./layout/AppLayout";
 // import PaymentsPage from "@/features/payments"; // exemplos
 // import DelayedOrdersPage from "@/features/orders/Delayed";
 // import ProductsEolPage from "@/features/products/Eol";
@@ -29,7 +29,7 @@ export default function App() {
           <ToasterProvider />
           <Routes>
             {/* Layout route */}
-            <Route element={<AppShell />}>
+            <Route element={<AppLayout />}>
               <Route path="/" element={<HomePage />} />
               {/* <Route path="/payments" element={<PaymentsPage />} /> */}
               {/* <Route path="/orders/delayed" element={<DelayedOrdersPage />} /> */}

@@ -2,34 +2,53 @@ import { useHealthz } from "@/features/system/healthz/queries.ts";
 import { StatusDot } from "@/components/feedback/StatusDot";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Loader2, Moon, RefreshCcw, Sun, Menu, X } from "lucide-react";
+import {
+  Loader2,
+  Moon,
+  RefreshCcw,
+  Sun,
+  Menu,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useTheme } from "@/providers/theme-provider";
 
 type Props = {
-  onToggleSidebar: () => void;
-  isSidebarOpen: boolean;
+  onToggleMobile: () => void; // abre/fecha gaveta no mobile
+  onToggleCollapse: () => void; // colapsa/expande no desktop
+  isSidebarOpen: boolean; // estado da gaveta no mobile
+  collapsed: boolean; // estado colapsado no desktop
 };
 
-export default function Topbar({ onToggleSidebar, isSidebarOpen }: Props) {
+export default function Topbar({
+  onToggleMobile,
+  onToggleCollapse,
+  isSidebarOpen,
+  collapsed,
+}: Props) {
   const { data, isFetching, refetch, isError } = useHealthz();
+
   const status = isError
     ? "critical"
     : !data
     ? "warning"
     : data.status?.toLowerCase();
+
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
   const latencyMs = data?.elapsedMs ? Math.round(data.elapsedMs) : null;
 
   return (
-    <div className="sticky top-0 z-10 mb-4 border-b bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40">
+    <div className="sticky top-0 z-10 h-14 mb-4 border-b bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40">
       <div className="flex h-14 items-center justify-between px-4">
-        {/* Esquerda: btn gaveta + título */}
-        <div className="flex items-center gap-3">
+        {/* Esquerda: botões + título */}
+        <div className="flex items-center gap-2">
+          {/* Mobile: abrir/fechar gaveta */}
           <Button
             variant="outline"
             size="icon"
-            onClick={onToggleSidebar}
+            onClick={onToggleMobile}
             aria-label={isSidebarOpen ? "Fechar navegação" : "Abrir navegação"}
             className="md:hidden"
           >
@@ -40,13 +59,28 @@ export default function Topbar({ onToggleSidebar, isSidebarOpen }: Props) {
             )}
           </Button>
 
-          <div className="text-sm font-medium">Watchdogs</div>
+          {/* Desktop: colapsar/expandir sidebar */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onToggleCollapse}
+            aria-label={collapsed ? "Expandir navegação" : "Colapsar navegação"}
+            className="hidden md:inline-flex"
+          >
+            {collapsed ? (
+              <ChevronRight className="h-5 w-5" />
+            ) : (
+              <ChevronLeft className="h-5 w-5" />
+            )}
+          </Button>
+
+          <div className="ml-1 text-sm font-medium">Watchdogs</div>
           <span className="text-xs text-muted-foreground">
             Sistema de Monitorização de Ecommerce
           </span>
         </div>
 
-        {/* Direita: status + ações */}
+        {/* Direita: estado + ações */}
         <div className="flex items-center gap-3">
           <div
             className={cn(
@@ -85,6 +119,7 @@ export default function Topbar({ onToggleSidebar, isSidebarOpen }: Props) {
             )}
           </div>
 
+          {/* Refresh */}
           <Button
             variant="outline"
             size="sm"
@@ -94,6 +129,7 @@ export default function Topbar({ onToggleSidebar, isSidebarOpen }: Props) {
             <RefreshCcw className="h-4 w-4" />
           </Button>
 
+          {/* Toggle tema */}
           <div
             onClick={() => setTheme(isDark ? "light" : "dark")}
             className={`flex items-center cursor-pointer transition-transform duration-500 ${
