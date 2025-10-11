@@ -3,11 +3,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { ToasterProvider } from "@/providers/toaster-provider";
-import HomePage from "@/features/home";
+import { Toaster } from "@/components/ui/sonner";
 import AppLayout from "./layout/AppLayout";
+
+// Pages
+import HomePage from "@/features/home";
+// --- Orders
+import DelayedOrdersPage from "@/features/orders/delayed";
 // import PaymentsPage from "@/features/payments"; // exemplos
-// import DelayedOrdersPage from "@/features/orders/Delayed";
+
 // import ProductsEolPage from "@/features/products/Eol";
 
 const queryClient = new QueryClient({
@@ -26,13 +30,14 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ThemeProvider defaultTheme="system">
-          <ToasterProvider />
+          <Toaster position="bottom-right" richColors />
           <Routes>
             {/* Layout route */}
             <Route element={<AppLayout />}>
               <Route path="/" element={<HomePage />} />
+              {/* Orders  */}
+              <Route path="/orders/delayed" element={<DelayedOrdersPage />} />
               {/* <Route path="/payments" element={<PaymentsPage />} /> */}
-              {/* <Route path="/orders/delayed" element={<DelayedOrdersPage />} /> */}
               {/* <Route path="/products/eol" element={<ProductsEolPage />} /> */}
             </Route>
           </Routes>

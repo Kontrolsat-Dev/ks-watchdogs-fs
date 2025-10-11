@@ -64,3 +64,74 @@ src
 ├─ index.css  
 ├─ main.tsx  
 └─ router.tsx
+
+```
+frontend
+├─ .env
+├─ components.json
+├─ eslint.config.js
+├─ index.html
+├─ package-lock.json
+├─ package.json
+├─ public
+│  ├─ favicon.png
+│  └─ logo.png
+├─ README.md
+├─ src
+│  ├─ api
+│  │  ├─ prestashop
+│  │  │  ├─ index.ts
+│  │  │  ├─ service.ts
+│  │  │  └─ types.ts
+│  │  └─ system
+│  │     ├─ index.ts
+│  │     ├─ service.ts
+│  │     └─ types.ts
+│  ├─ app.tsx
+│  ├─ assets
+│  │  └─ react.svg
+│  ├─ components
+│  │  ├─ data
+│  │  │  └─ StatCard.tsx
+│  │  ├─ feedback
+│  │  │  ├─ StatusBadge.tsx
+│  │  │  └─ StatusDot.tsx
+│  │  └─ ui
+│  │     ├─ badge.tsx
+│  │     ├─ button.tsx
+│  │     ├─ card.tsx
+│  │     ├─ input.tsx
+│  │     ├─ separator.tsx
+│  │     ├─ skeleton.tsx
+│  │     ├─ table.tsx
+│  │     └─ tooltip.tsx
+│  ├─ constants
+│  │  └─ endpoints.ts
+│  ├─ features
+│  │  ├─ home
+│  │  │  └─ index.tsx
+│  │  └─ system
+│  │     └─ healthz
+│  │        └─ queries.ts
+│  ├─ index.css
+│  ├─ layout
+│  │  ├─ AppLayout.tsx
+│  │  ├─ Sidebar.tsx
+│  │  └─ Topbar.tsx
+│  ├─ lib
+│  │  ├─ http-client.ts
+│  │  └─ utils.ts
+│  ├─ main.tsx
+│  ├─ providers
+│  │  ├─ query-client.tsx
+│  │  ├─ theme-provider.tsx
+│  │  └─ toaster-provider.tsx
+│  └─ types
+│     └─ global.ts
+├─ TODO.md
+├─ tsconfig.app.json
+├─ tsconfig.json
+├─ tsconfig.node.json
+└─ vite.config.ts
+
+```
