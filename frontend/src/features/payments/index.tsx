@@ -42,6 +42,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { formatDate, timeAgo } from "@/helpers/time";
+import FlashError from "@/components/data/flash-error";
 
 // ----------------- components -----------------
 function StatusBadge({ status }: { status: string }) {
@@ -93,14 +94,19 @@ export default function PaymentsPage() {
     refetch: () => void;
   };
 
-  // toast de erro (fora do render)
-  useEffect(() => {
-    if (!isError) return;
-    toast.error("Erro ao carregar métodos de pagamento", {
-      id: "payments-error",
-      description: "Não foi possível carregar os dados dos métodos.",
-    });
-  }, [isError]);
+  if (isError) {
+    return (
+      <FlashError
+        flashId="payments-error"
+        flashTitle="Erro ao carregar métodos de pagamento"
+        flashMessage="Não foi possível carregar os métodos de pagamento."
+        cardTitle="Métodos de Pagamento"
+        cardDescription="Não foi possível carregar os métodos de pagamento."
+        cardButtonAction={() => refetch()}
+        cardButtonText="Tentar novamente"
+      />
+    );
+  }
 
   // filtros
   const [q, setQ] = useState("");

@@ -50,6 +50,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { formatDate, timeAgo } from "@/helpers/time";
+import FlashError from "@/components/data/flash-error";
 
 function hasUPCValue(upc: unknown): boolean {
   if (upc == null) return false;
@@ -79,14 +80,19 @@ export default function ProductsEolPage() {
     refetch: () => void;
   };
 
-  useEffect(() => {
-    if (!isError) return;
-    toast.error("Erro ao carregar produtos EOL", {
-      id: "products-eol-error",
-      description:
-        "Não foi possível carregar os dados de produtos em fim de vida.",
-    });
-  }, [isError]);
+  if (isError) {
+    return (
+      <FlashError
+        flashId="products-eol-error"
+        flashTitle="Erro ao carregar produtos em fim de vida"
+        flashMessage="Não foi possível carregar os produtos em fim de vida."
+        cardTitle="Produtos em Fim de Vida"
+        cardDescription="Não foi possível carregar os produtos em fim de vida."
+        cardButtonAction={() => refetch()}
+        cardButtonText="Tentar novamente"
+      />
+    );
+  }
 
   // filtros
   const [q, setQ] = useState("");
