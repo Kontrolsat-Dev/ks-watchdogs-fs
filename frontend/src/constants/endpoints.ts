@@ -7,6 +7,7 @@ export const Endpoints = Object.freeze({
   // ------- System Endpoints -------
   // --------------------------------
   HEALTHZ: import.meta.env.VITE_API_HEALTH_URL || "/healthz",
+  RUNS: import.meta.env.VITE_API_RUNS || "/runs",
   // --------------------------------
   // ----- Prestashop Endpoints -----
   // --------------------------------

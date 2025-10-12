@@ -30,9 +30,10 @@ const NAV_ITEMS: NavItems[] = [
     name: "Prestashop",
     icon: Store,
     items: [
-      { to: "/payments", label: "Métodos de Pagamento" },
-      { to: "/orders/delayed", label: "Encomendas Atrasadas" },
-      { to: "/products/eol", label: "Produtos EOL" },
+      { to: "/prestashop/payments", label: "Métodos de Pagamento" },
+      { to: "/prestashop/orders/delayed", label: "Encomendas Atrasadas" },
+      { to: "/prestashop/products/eol", label: "Produtos EOL" },
+      { to: "/prestashop/pages/loading", label: "Carregamento Páginass" },
     ],
   },
   {
