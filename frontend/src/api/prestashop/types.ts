@@ -45,6 +45,7 @@ export interface ProductEol {
   id_product: number;
   name: string;
   reference: string;
+  ean13: string;
   upc: string;
   price: boolean;
   last_in_stock_at: string;

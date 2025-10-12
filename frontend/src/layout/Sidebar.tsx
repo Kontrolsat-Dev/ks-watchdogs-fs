@@ -1,8 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { Store, ChevronDown } from "lucide-react";
+import {
+  Store,
+  ChevronDown,
+  ToolCase,
+  Truck,
+  ChartSpline,
+  Globe,
+  MonitorCog,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -23,11 +30,48 @@ const NAV_ITEMS: NavItems[] = [
     name: "Prestashop",
     icon: Store,
     items: [
-      { to: "/", label: "Dashboard" },
       { to: "/payments", label: "Métodos de Pagamento" },
       { to: "/orders/delayed", label: "Encomendas Atrasadas" },
       { to: "/products/eol", label: "Produtos EOL" },
     ],
+  },
+  {
+    name: "Ferramentas",
+    icon: ToolCase,
+    items: [
+      { to: "/patife", label: "Patife" },
+      { to: "/policia", label: "Policia" },
+      { to: "/gc", label: "Gestor de Campanhas" },
+    ],
+  },
+
+  {
+    name: "Serviços",
+    icon: Globe,
+    items: [
+      { to: "/bulkgate", label: "Bulkgate" },
+      { to: "/mailchimp", label: "Mailchimp" },
+    ],
+  },
+  {
+    name: "Métricas",
+    icon: ChartSpline,
+    items: [{ to: "/orders/processing", label: "Processamento Encomendas" }],
+  },
+  {
+    name: "Transportadoras",
+    icon: Truck,
+    items: [
+      { to: "/carriers/nacex", label: "Nacex" },
+      { to: "/carriers/ctt", label: "CTT" },
+      { to: "/carriers/dpd", label: "DPD" },
+      { to: "/carriers/ttm", label: "TTM" },
+    ],
+  },
+  {
+    name: "Sistema",
+    icon: MonitorCog,
+    items: [{ to: "/system/runs", label: "Logs de Analises" }],
   },
 ];
 
@@ -91,7 +135,6 @@ const Sidebar: React.FC<Props> = ({ collapsed, mobileOpen, onCloseMobile }) => {
         </span>
       </div>
 
-      {/* Navegação */}
       <nav className="p-2 space-y-1 overflow-auto h-[calc(100%-3.5rem)]">
         {NAV_ITEMS.map(({ name, icon: Icon, items }) => {
           const isOpen = open[name];

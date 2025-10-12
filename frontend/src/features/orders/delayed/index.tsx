@@ -210,7 +210,7 @@ export default function OrdersDelayedPage() {
               <TableCaption className="text-xs">
                 Listagem das encomendas sinalizadas como atrasadas.
               </TableCaption>
-              <TableHeader>
+              <TableHeader className="sticky top-0 z-10 bg-background">
                 <TableRow>
                   <TableHead className="w-[140px]">Encomenda</TableHead>
                   <TableHead>Estado</TableHead>
