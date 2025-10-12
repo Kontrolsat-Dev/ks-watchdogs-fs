@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     PS_CHECK_EOL_PRODUCTS: str = "https://domain.com/__watchdogs/check_eol_products.php"
     PS_EOL_WARN_DAYS: int = 30
     PS_EOL_CRIT_DAYS: int = 60
+    # --> Carregamento de Páginas
+    PS_HOME_PAGE: str = "https://domain.com/home.php"
+    PS_PRODUCT_PAGE: str = "https://domain.com/product/product-1.php"
     # External Services
 
 

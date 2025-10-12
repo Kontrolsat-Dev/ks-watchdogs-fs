@@ -10,7 +10,6 @@ class PrestashopClient:
     def __init__(
             self,
             base_url: str | None = None,
-            payments_url: str | None = None,
             api_key: str | None = None,
             timeout: int | None = None,
             user_agent: str | None = None,
