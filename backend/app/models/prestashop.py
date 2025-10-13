@@ -1,5 +1,5 @@
 from __future__ import annotations
-from sqlalchemy import Column, Integer, String, DateTime, Float, Index, Boolean, Numeric
+from sqlalchemy import Column, Integer, String, DateTime, Float, Index, Boolean, Numeric, JSON
 from sqlalchemy.sql import func
 
 from app.core.db import Base
@@ -55,3 +55,19 @@ class EOLProductSnapshot(Base):
     days_since = Column(Integer, nullable=False, default=0)
     status = Column(String(16), nullable=False)  # "ok" | "warning" | "critical"
     observed_at = Column(DateTime(timezone=True), nullable=False, index=True)
+
+
+class PageSpeedSnapshot(Base):
+    __tablename__ = "page_speeds"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    page_type = Column(String(16), index=True)
+    url = Column(String(1024), nullable=False)
+    status_code = Column(Integer)
+    severity = Column(String(16), index=True)
+    ttfb_ms = Column(Integer)
+    total_ms = Column(Integer)
+    html_bytes = Column(Integer)
+    headers = Column (JSON)
+    sanity = Column(JSON)
+    observed_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)

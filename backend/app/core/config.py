@@ -39,9 +39,25 @@ class Settings(BaseSettings):
     PS_EOL_WARN_DAYS: int = 30
     PS_EOL_CRIT_DAYS: int = 60
     # --> Carregamento de Páginas
-    PS_HOME_PAGE: str = "https://domain.com/home.php"
-    PS_PRODUCT_PAGE: str = "https://domain.com/product/product-1.php"
-    # External Services
+    PS_HOME_URL: str = "https://domain.com/home.php"
+    PS_PRODUCT_URL: str = "https://domain.com/product/product-1.php"
+    PS_PAGESPEED_JSONLD_IS_CRITICAL: bool = False
+    PS_PAGESPEED_IGNORE_SANITY_WARNINGS: bool = True
+    PS_PAGESPEED_IGNORE_WARN_KEYS: list[str] = [
+        "title_ok", "meta_desc_ok", "h1_ok", "canonical_ok", "blocking_scripts_in_head"
+    ]
+    PS_PAGESPEED_HOME_TTFB_WARN: int = 1600
+    PS_PAGESPEED_HOME_TTFB_CRIT: int = 2500
+    PS_PAGESPEED_HOME_TOTAL_WARN: int = 1800
+    PS_PAGESPEED_HOME_TOTAL_CRIT: int = 3000
+    PS_PAGESPEED_HOME_HTML_WARN: int = 450_000
+    PS_PAGESPEED_HOME_HTML_CRIT: int = 900_000
+    PS_PAGESPEED_PRODUCT_TTFB_WARN: int = 350
+    PS_PAGESPEED_PRODUCT_TTFB_CRIT: int = 800
+    PS_PAGESPEED_PRODUCT_TOTAL_WARN: int = 1000
+    PS_PAGESPEED_PRODUCT_TOTAL_CRIT: int = 2000
+    PS_PAGESPEED_PRODUCT_HTML_WARN: int = 320_000
+    PS_PAGESPEED_PRODUCT_HTML_CRIT: int = 900_000
 
 
 settings = Settings()

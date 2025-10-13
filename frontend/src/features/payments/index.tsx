@@ -1,5 +1,5 @@
 // src/features/payments/index.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { PaymentsResponse, PaymentMethod } from "@/api/prestashop/types";
 import { usePayments } from "./queries";
 import LoadingPayments from "./components/loading-payments";
@@ -30,9 +30,7 @@ import {
   SelectItem,
   SelectContent,
 } from "@/components/ui/select";
-
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 import {
   RefreshCcw,
   Search,

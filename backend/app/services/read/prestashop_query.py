@@ -8,6 +8,8 @@ from app.helpers.formatters import _iso
 from app.repos.prestashop.payments_read import PaymentsReadRepo
 from app.repos.prestashop.orders_read import OrdersReadRepo
 from app.repos.prestashop.eol_read import EOLOutReadRepo
+from app.repos.prestashop.pagespeed_read import PageSpeedReadRepo
+from app.schemas.prestashop import PageSpeedDTO, PageSpeedsListDTO
 
 from app.schemas.prestashop import (
     PaymentMethodDTO,
@@ -19,7 +21,8 @@ class PrestashopQueryService:
     def __init__(self, db: Session):
         self._payments = PaymentsReadRepo(db)
         self._orders = OrdersReadRepo(db)
-        self._eol = EOLOutReadRepo(db)   # <- repo já instanciado aqui
+        self._eol = EOLOutReadRepo(db)
+        self._pagespeed = PageSpeedReadRepo(db)
 
     # Payments
     def get_payments(self) -> List[PaymentMethodDTO]:
@@ -74,3 +77,22 @@ class PrestashopQueryService:
 
     def get_eol_counts(self) -> dict:
         return self._eol.counts()
+
+    # PageSpeed (home + product)
+    def get_pagespeed(self) -> list[PageSpeedDTO]:
+        rows = self._pagespeed.latest_by_page_type()
+        return [
+            PageSpeedDTO(
+                page_type=r["page_type"],
+                url=r["url"],
+                status=r["severity"],
+                status_code=int(r["status_code"]),
+                ttfb_ms=int(r["ttfb_ms"]),
+                total_ms=int(r["total_ms"]),
+                html_bytes=int(r["html_bytes"]),
+                headers=r["headers"],
+                sanity=r["sanity"],
+                observed_at=r["observed_at"].isoformat(),
+            )
+            for r in rows
+        ]

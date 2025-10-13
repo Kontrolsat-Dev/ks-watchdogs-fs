@@ -6,6 +6,7 @@ def register_jobs(sched: AsyncIOScheduler, db_session_factory):
     from workers.jobs.prestashop.prestashop_payments import run as ps_payments_run
     from workers.jobs.prestashop.prestashop_orders_delayed import run as ps_orders_run
     from workers.jobs.prestashop.prestashop_eol import run as ps_eol_run
+    from workers.jobs.prestashop.prestashop_pagespeed import run as ps_pagespeed_run
 
     # Pagamentos
     sched.add_job(
@@ -29,6 +30,14 @@ def register_jobs(sched: AsyncIOScheduler, db_session_factory):
         ps_eol_run, "interval",
         minutes=5, next_run_time=datetime.now() + timedelta(seconds=5),
         id="prestashop.eol_products",
+        kwargs={"db_session_factory": db_session_factory},
+        max_instances=1, coalesce=True, replace_existing=True,
+    )
+
+    sched.add_job(
+        ps_pagespeed_run, "interval",
+        minutes=10, next_run_time=datetime.now() + timedelta(seconds=5),
+        id="prestashop.pagespeed",
         kwargs={"db_session_factory": db_session_factory},
         max_instances=1, coalesce=True, replace_existing=True,
     )

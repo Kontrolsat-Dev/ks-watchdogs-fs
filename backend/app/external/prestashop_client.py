@@ -2,6 +2,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 import certifi
+import time
 
 from app.core.config import settings
 
@@ -135,3 +136,89 @@ class PrestashopClient:
             return data
 
         raise RuntimeError(f"Unexpected EOL products response: {data!r}")
+
+    # -------------------------------
+    # Pages Speed Test
+    # -------------------------------
+    def fetch_pagespeed(self, page_type: str = "product") -> dict:
+        import time
+
+        endpoint = settings.PS_HOME_URL if page_type == "home" else settings.PS_PRODUCT_URL
+        headers = {
+            "User-Agent": self.user_agent,
+            "Accept": "text/html",
+            "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache",
+        }
+
+        started = time.perf_counter()
+        resp = self._session.get(
+            endpoint, headers=headers, timeout=(3, self.timeout), verify=self._verify, stream=True
+        )
+        status = resp.status_code
+
+        size = 0
+        first_chunk_at = None
+
+        # LÊ APENAS UMA VEZ
+        for chunk in resp.iter_content(chunk_size=16384):
+            if not chunk:
+                continue
+            if first_chunk_at is None:
+                first_chunk_at = time.perf_counter()
+            size += len(chunk)
+
+        ended = time.perf_counter()
+        resp.close()
+
+        # fallback raro: se algum proxy quebrou o stream e size==0, faz um GET normal
+        if size == 0:
+            resp2 = self._session.get(
+                endpoint, headers=headers, timeout=(3, self.timeout), verify=self._verify, stream=False
+            )
+            status = resp2.status_code
+            body2 = resp2.content or b""
+            size = len(body2)
+            # usa o elapsed como proxy de TTFB neste fallback
+            ttfb_ms = int(resp2.elapsed.total_seconds() * 1000)
+            total_ms = ttfb_ms  # com fallback não temos medição granular
+            headers_l = {k.lower(): v for k, v in resp2.headers.items()}
+            html_text = body2.decode(errors="ignore")
+        else:
+            ttfb_ms = int(((first_chunk_at or ended) - started) * 1000)
+            total_ms = int((ended - started) * 1000)
+            headers_l = {k.lower(): v for k, v in resp.headers.items()}
+            # já consumimos tudo acima; não faças nova leitura — html virá do tamanho medido
+            # como não guardámos os bytes, só precisamos do texto p/ sanidade:
+            # para evitar nova request grande, lê o corpo via Segunda request apenas se precisares mesmo do HTML:
+            # aqui vamos fazer uma segunda request leve SEM stream (custa 1 ida) para obter o HTML para sanidade
+            # (se preferires evitar 2ª request, acumula os chunks numa lista e faz join)
+            resp_full = self._session.get(
+                endpoint, headers=headers, timeout=(3, self.timeout), verify=self._verify, stream=False
+            )
+            html_text = resp_full.text
+
+        headers_out = {
+            "content_type": headers_l.get("content-type", ""),
+            "cache_control": headers_l.get("cache-control", ""),
+            "age": headers_l.get("age", ""),
+            "server": headers_l.get("server", ""),
+            "cf_cache_status": headers_l.get("cf-cache-status", ""),
+            "x_cache": headers_l.get("x-cache", ""),
+        }
+
+        return {
+            "page_type": "home" if page_type == "home" else "product",
+            "url": endpoint,
+            "status_code": status,
+            "ttfb_ms": ttfb_ms,
+            "total_ms": total_ms,
+            "html_bytes": size,
+            "headers": headers_out,
+            "html_text": html_text,
+        }
+
+
+
+

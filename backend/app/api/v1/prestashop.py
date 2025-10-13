@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.core.db import get_db  # garante que tens este helper
 from app.services.read.prestashop_query import PrestashopQueryService
-from app.schemas.prestashop import PaymentsListDTO, DelayedOrdersListDTO, EOLProductsListDTO
+from app.schemas.prestashop import PageSpeedsListDTO, PaymentsListDTO, DelayedOrdersListDTO, EOLProductsListDTO
 
 router = APIRouter(prefix="/prestashop", tags=["prestashop"])
 
@@ -27,3 +27,9 @@ def get_eol(db: Session = Depends(get_db)):
     items = svc.get_eol_products()
     counts = svc.get_eol_counts()
     return {"ok": True, "count": len(items), "counts": counts, "items": items}
+
+@router.get("/pagespeed", response_model=PageSpeedsListDTO)
+def list_pagespeed(db: Session = Depends(get_db)):
+    svc = PrestashopQueryService(db)
+    items = svc.get_pagespeed()
+    return {"ok": True, "count": len(items), "items": items}

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from typing import List
+from typing import List, Literal
 from app.shared.status import Status, StatusLiteral
 
 
@@ -53,3 +53,22 @@ class EOLProductsListDTO(BaseModel):
     count: int
     counts: dict
     items: List[EOLProductDTO]
+    
+    
+class PageSpeedDTO(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
+    page_type: Literal["home", "product"]
+    url: str
+    status: Status
+    status_code: int
+    ttfb_ms: int
+    total_ms: int
+    html_bytes: int
+    headers: dict
+    sanity: dict
+    observed_at: str
+
+class PageSpeedsListDTO(BaseModel):
+    ok: bool
+    count: int
+    items: List[PageSpeedDTO]
