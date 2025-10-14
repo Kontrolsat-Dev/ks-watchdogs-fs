@@ -5,6 +5,7 @@ import type {
   CartAbandonedResponse,
   DelayedOrdersResponse,
   PaymentsResponse,
+  PerfResponse,
   ProductsEolReponse,
 } from "./types";
 
@@ -33,5 +34,9 @@ export class PrestashopService {
 
   getProductsEol() {
     return this.http.get<ProductsEolReponse>(Endpoints.PRESTASHOP_PRODUCTS_EOL);
+  }
+
+  getPagesSpeed() {
+    return this.http.get<PerfResponse>(Endpoints.VITE_PRESTASHOP_PAGES_STATUS);
   }
 }

@@ -76,3 +76,44 @@ export interface CartAbandonedResponse {
   count: number;
   items: CartAbandoned[];
 }
+
+// Page Speed
+export type PageHeaders = {
+  content_type?: string;
+  cache_control?: string;
+  age?: string;
+  server?: string;
+  cf_cache_status?: string;
+  x_cache?: string;
+};
+
+export type PageSanity = {
+  title_ok?: boolean | null;
+  title_len?: number | null;
+  meta_desc_ok?: boolean | null;
+  meta_desc_len?: number | null;
+  h1_ok?: boolean | null;
+  canonical_ok?: boolean | null;
+  jsonld_product_ok?: boolean | null;
+  blocking_scripts_in_head?: number | null;
+};
+
+export type PerfItem = {
+  page_type: string;
+  url: string;
+  status: "ok" | "warning" | "critical" | string;
+  status_code: number;
+  ttfb_ms: number;
+  total_ms: number;
+  html_bytes: number;
+  headers: PageHeaders;
+  sanity: PageSanity;
+  observed_at: string; // ISO
+};
+
+export type PerfResponse = {
+  ok: boolean;
+  count: number;
+  items?: PerfItem[];
+  elapsedMs?: number;
+};

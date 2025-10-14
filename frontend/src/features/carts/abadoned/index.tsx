@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAbandonedCarts } from "./queries"; // mantém como tens
 import {
@@ -44,6 +43,7 @@ import type {
   CartAbandoned,
   CartAbandonedResponse,
 } from "@/api/prestashop/types";
+import FlashError from "@/components/data/flash-error";
 
 export default function CartsAbandonedPage() {
   const { data, isFetching, isError, refetch } = useAbandonedCarts() as {
@@ -53,14 +53,19 @@ export default function CartsAbandonedPage() {
     refetch: () => void;
   };
 
-  useEffect(() => {
-    if (!isError) return;
-    toast.error("Erro ao carregar carrinhos abandonados", {
-      id: "abandoned-carts-error",
-      description: "Não foi possível obter os carrinhos abandonados.",
-    });
-  }, [isError]);
-
+  if (isError) {
+    return (
+      <FlashError
+        flashId="abandoned-carts-error"
+        flashTitle="Erro ao carregar carrinhos abandonados"
+        flashMessage="Não foi possível carregar os carrinhos abandonados."
+        cardTitle="Carrinhos Abandonados"
+        cardDescription="Não foi possível carregar os dados."
+        cardButtonAction={() => refetch()}
+        cardButtonText="Tentar novamente"
+      />
+    );
+  }
   const items = (data?.items ?? []) as CartAbandoned[];
 
   // filtros

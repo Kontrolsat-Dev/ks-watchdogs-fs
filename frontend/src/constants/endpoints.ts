@@ -16,9 +16,8 @@ export const Endpoints = Object.freeze({
     import.meta.env.VITE_PRESTASHOP_ORDERS_DELAYED || "/orders/delayed",
   PRESTASHOP_ABANDONED_CARTS:
     import.meta.env.VITE_PRESTASHOP_ABANDONED_CARTS || "/carts/abandoned",
-  PRESTASHOP_PAGES_STATUS_HOMEPAGE:
-    import.meta.env.VITE_PRESTASHOP_PAGES_STATUS_HOMEPAGE ||
-    "/page-status/homepage",
+  VITE_PRESTASHOP_PAGES_STATUS:
+    import.meta.env.VITE_PRESTASHOP_PAGES_STATUS || "/pagespeed",
   PRESTASHOP_PRODUCTS_EOL:
     import.meta.env.VITE_PRESTASHOP_PRODUCTS_EOL || "/products/eol",
 });

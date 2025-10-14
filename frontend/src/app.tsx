@@ -15,7 +15,7 @@ import PaymentsPage from "@/features/payments";
 // --- Products
 import ProductsEolPage from "@/features/products/eol";
 import SystemRunsPage from "./features/system/runs";
-import PagesLoadingPage from "./features/pages/loading";
+import PagesSpedPage from "./features/pages/speed";
 import CartsAbandonedPage from "./features/carts/abadoned";
 
 const queryClient = new QueryClient({
@@ -55,7 +55,7 @@ export default function App() {
               />
               <Route
                 path="/prestashop/pages/loading"
-                element={<PagesLoadingPage />}
+                element={<PagesSpedPage />}
               />
               {/* System */}
               <Route path="/system/runs" element={<SystemRunsPage />} />

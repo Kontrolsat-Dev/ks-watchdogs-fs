@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { prestashopClient } from "@/api/prestashop";
 
-export function useAbandonedCarts() {
+export function usePagesSpeed() {
   return useQuery({
-    queryKey: ["carts", "abandoned"],
+    queryKey: ["pages", "speed"],
     queryFn: async () => {
       const started = performance.now();
-      const data = await prestashopClient.getAbandonedCarts();
+      const data = await prestashopClient.getPagesSpeed();
       const elapsedMs = Math.max(0, performance.now() - started);
       return { ...data, elapsedMs };
     },
