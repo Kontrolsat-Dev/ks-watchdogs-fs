@@ -1,5 +1,6 @@
+// src/layout/Sidebar.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   Store,
   ChevronDown,
@@ -8,24 +9,25 @@ import {
   ChartSpline,
   Globe,
   MonitorCog,
+  LayoutDashboard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 type Props = {
-  collapsed: boolean; // aplica-se a md+
+  collapsed: boolean; // AGORA: colapsa grupos (não a largura)
   mobileOpen: boolean; // gaveta em < md
   onCloseMobile: () => void;
 };
 
 type NavItem = { to: string; label: string };
-type NavItems = {
+type NavGroup = {
   name: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   items: NavItem[];
 };
 
-const NAV_ITEMS: NavItems[] = [
+const NAV_ITEMS: NavGroup[] = [
   {
     name: "Prestashop",
     icon: Store,
@@ -46,7 +48,6 @@ const NAV_ITEMS: NavItems[] = [
       { to: "/gc", label: "Gestor de Campanhas" },
     ],
   },
-
   {
     name: "Serviços",
     icon: Globe,
@@ -79,124 +80,186 @@ const NAV_ITEMS: NavItems[] = [
 
 const GROUPS_KEY = "sidebar_groups_v1";
 
-const Sidebar: React.FC<Props> = ({ collapsed, mobileOpen, onCloseMobile }) => {
-  // estado aberto/fechado por grupo com persistência
-  const initialOpen = useMemo<Record<string, boolean>>(() => {
+export default function Sidebar({
+  collapsed,
+  mobileOpen,
+  onCloseMobile,
+}: Props) {
+  const location = useLocation();
+
+  // helpers
+  const allFalse = useMemo(
+    () =>
+      Object.fromEntries(NAV_ITEMS.map((g) => [g.name, false])) as Record<
+        string,
+        boolean
+      >,
+    []
+  );
+
+  // lê guardado ou default = todos fechados
+  const readSaved = () => {
     try {
       const saved = JSON.parse(
         localStorage.getItem(GROUPS_KEY) || "{}"
       ) as Record<string, boolean>;
-      const base: Record<string, boolean> = {};
-      NAV_ITEMS.forEach((g) => (base[g.name] = saved[g.name] ?? true));
+      const base: Record<string, boolean> = { ...allFalse };
+      for (const g of NAV_ITEMS) base[g.name] = saved[g.name] ?? false;
       return base;
     } catch {
-      const base: Record<string, boolean> = {};
-      NAV_ITEMS.forEach((g) => (base[g.name] = true));
-      return base;
+      return { ...allFalse };
     }
-  }, []);
+  };
 
-  const [open, setOpen] = useState<Record<string, boolean>>(initialOpen);
+  // estado de open por grupo
+  const [open, setOpen] = useState<Record<string, boolean>>(() => readSaved());
 
+  // persistência
   useEffect(() => {
     localStorage.setItem(GROUPS_KEY, JSON.stringify(open));
   }, [open]);
 
+  // ao mudar de rota, abre o grupo correspondente (se estiver fechado)
+  useEffect(() => {
+    setOpen((m) => {
+      const next = { ...m };
+      for (const g of NAV_ITEMS) {
+        const active = g.items.some((i) => location.pathname.startsWith(i.to));
+        if (active) next[g.name] = true;
+      }
+      return next;
+    });
+  }, [location.pathname]);
+
+  // "collapsed" agora fecha/abre TODOS os grupos (sem mexer na largura)
+  useEffect(() => {
+    if (collapsed) {
+      setOpen({ ...allFalse });
+    } else {
+      // restaurar últimos abertos do storage + garantir grupo ativo aberto
+      const restored = readSaved();
+      for (const g of NAV_ITEMS) {
+        const active = g.items.some((i) => location.pathname.startsWith(i.to));
+        if (active) restored[g.name] = true;
+      }
+      setOpen(restored);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [collapsed]);
+
   const toggleGroup = (name: string) =>
     setOpen((m) => ({ ...m, [name]: !m[name] }));
 
+  const groupIsActive = (g: NavGroup) =>
+    g.items.some((i) => location.pathname.startsWith(i.to));
+
   return (
     <aside
+      role="navigation"
+      aria-label="Navegação principal"
       className={cn(
-        // base
-        "fixed md:static inset-y-0 left-0 z-40 h-full md:h-screen border-r bg-background/80 supports-[backdrop-filter]:bg-background/80 transition-all duration-200 ease-in-out",
-        // larguras
-        "w-72 md:w-64", // mobile sempre w-72; desktop padrão w-64
-        collapsed && "md:w-16", // se colapsado, desktop fica w-16
-        // gaveta mobile
+        "fixed md:static inset-y-0 left-0 z-40 h-full md:h-screen border-r",
+        "bg-background/70 supports-[backdrop-filter]:bg-background/30 backdrop-blur-xl",
+        "transition-transform duration-200 ease-in-out",
+        "w-72 md:w-64", // largura fixa
         mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       )}
-      aria-hidden={
-        !mobileOpen && typeof window !== "undefined" ? undefined : undefined
-      }
     >
       {/* Cabeçalho */}
       <div className="h-14 px-3 flex items-center gap-3 border-b">
-        <img
-          src="/logo.png"
-          alt="watchdogs"
-          className={cn("h-5 w-5 ms-2", collapsed && "md:ms-3")}
-        />
-        <span
-          className={cn(
-            "font-semibold tracking-wider truncate text-lg",
-            collapsed && "md:hidden"
-          )}
-        >
+        <img src="/logo.png" alt="watchdogs" className="h-5 w-5 ms-2" />
+        <span className="font-semibold tracking-wider truncate text-lg">
           Watchdogs
         </span>
       </div>
 
-      <nav className="p-2 space-y-1 overflow-auto h-[calc(100%-3.5rem)]">
-        {NAV_ITEMS.map(({ name, icon: Icon, items }) => {
+      {/* Navegação */}
+      <nav className="p-2 space-y-1 overflow-auto h-[calc(100%-3.5rem)] sidebar-scroll">
+        {/* Dashboard */}
+        <NavLink
+          to="/"
+          end
+          onClick={onCloseMobile}
+          className={({ isActive }) =>
+            cn(
+              "relative flex items-center rounded-md px-3 py-2 text-sm font-medium mb-2 transition-colors outline-none",
+              "hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring",
+              isActive && "bg-accent text-accent-foreground"
+            )
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <span
+                className={cn(
+                  "absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-primary opacity-0 transition-opacity",
+                  isActive && "opacity-100"
+                )}
+              />
+              <LayoutDashboard className="h-5 w-5" />
+              <span className="ml-2">Dashboard</span>
+            </>
+          )}
+        </NavLink>
+
+        {/* Grupos */}
+        {NAV_ITEMS.map((group) => {
+          const { name, icon: Icon, items } = group;
           const isOpen = open[name];
+          const isGrpActive = groupIsActive(group);
           const contentId = `group-${name.replace(/\s+/g, "-").toLowerCase()}`;
 
           return (
             <div key={name} className="mb-1">
-              {/* Linha do grupo */}
               <div
                 className={cn(
-                  "flex items-center rounded-md px-3 py-2",
-                  collapsed ? "justify-center" : "justify-between"
+                  "group flex items-center rounded-md px-3 py-2 transition-colors justify-between",
+                  isGrpActive && "bg-accent/50 text-accent-foreground"
                 )}
                 aria-label={name}
-                title={collapsed ? name : undefined}
               >
                 <div className="flex items-center gap-2">
-                  <Icon className="h-5 w-5" />
-                  {!collapsed && (
-                    <h2 className="text-md font-medium">{name}</h2>
-                  )}
-                </div>
-
-                {/* Botão recolher/expandir (só visível quando expandido) */}
-                {!collapsed && (
-                  <Button
-                    // type="button"
-                    variant="link"
-                    onClick={() => toggleGroup(name)}
-                    // className="h-8 w-8 inline-grid place-items-center rounded-md border hover:bg-accent hover:text-accent-foreground"
-                    aria-expanded={isOpen}
-                    aria-controls={contentId}
-                    aria-label={
-                      isOpen ? `Recolher ${name}` : `Expandir ${name}`
-                    }
+                  <Icon
+                    className={cn("h-5 w-5", isGrpActive && "text-primary")}
+                  />
+                  <h2
+                    className={cn(
+                      "text-sm font-medium",
+                      isGrpActive && "text-foreground"
+                    )}
                   >
-                    <ChevronDown
-                      className={cn(
-                        "h-4 w-4 transition-transform duration-200",
-                        isOpen ? "rotate-0" : "-rotate-90"
-                      )}
-                    />
-                  </Button>
-                )}
+                    {name}
+                  </h2>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => toggleGroup(name)}
+                  aria-expanded={isOpen}
+                  aria-controls={contentId}
+                  aria-label={isOpen ? `Recolher ${name}` : `Expandir ${name}`}
+                  className="h-8 w-8"
+                >
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 transition-transform duration-200",
+                      isOpen ? "rotate-0" : "-rotate-90"
+                    )}
+                  />
+                </Button>
               </div>
 
-              {/* Conteúdo do grupo com transição (grid-rows 0fr ↔ 1fr) */}
               <div
                 id={contentId}
-                // quando colapsado (sidebar), força fechado visualmente
                 className={cn(
                   "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out",
-                  !collapsed && isOpen
+                  isOpen
                     ? "grid-rows-[1fr] opacity-100"
                     : "grid-rows-[0fr] opacity-0"
                 )}
-                aria-hidden={collapsed || !isOpen}
+                aria-hidden={!isOpen}
               >
                 <div className="overflow-hidden">
-                  {/* Separador + itens */}
                   {items.map(({ to, label }) => (
                     <NavLink
                       to={to}
@@ -204,13 +267,23 @@ const Sidebar: React.FC<Props> = ({ collapsed, mobileOpen, onCloseMobile }) => {
                       onClick={onCloseMobile}
                       className={({ isActive }) =>
                         cn(
-                          "ml-3 flex items-center rounded-md px-3 py-2 text-sm font-medium mb-1 transition-colors",
-                          "hover:bg-accent hover:text-accent-foreground",
+                          "relative ml-3 flex items-center rounded-md px-3 py-2 text-sm font-medium mb-1 transition-colors outline-none",
+                          "hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring",
                           isActive && "bg-accent text-accent-foreground"
                         )
                       }
                     >
-                      <span>{label}</span>
+                      {({ isActive }) => (
+                        <>
+                          <span
+                            className={cn(
+                              "absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-primary opacity-0 transition-opacity",
+                              isActive && "opacity-100"
+                            )}
+                          />
+                          <span>{label}</span>
+                        </>
+                      )}
                     </NavLink>
                   ))}
                 </div>
@@ -221,6 +294,4 @@ const Sidebar: React.FC<Props> = ({ collapsed, mobileOpen, onCloseMobile }) => {
       </nav>
     </aside>
   );
-};
-
-export default Sidebar;
+}
