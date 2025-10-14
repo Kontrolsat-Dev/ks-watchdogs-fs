@@ -68,6 +68,17 @@ class PageSpeedSnapshot(Base):
     ttfb_ms = Column(Integer)
     total_ms = Column(Integer)
     html_bytes = Column(Integer)
-    headers = Column (JSON)
+    headers = Column(JSON)
     sanity = Column(JSON)
+    observed_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+
+
+class AbandonedCartSnapshot(Base):
+    __tablename__ = "abandoned_carts"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    id_cart = Column(Integer, index=True, nullable=False)
+    id_customer = Column(Integer, nullable=False, default=0)
+    items = Column(Integer, nullable=False, default=0)
+    hours_stale = Column(Integer, nullable=False, default=0)
+    status = Column(String(16), index=True, nullable=False)  # ok|warning|critical
     observed_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)

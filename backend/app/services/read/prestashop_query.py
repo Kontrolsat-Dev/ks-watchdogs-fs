@@ -1,15 +1,16 @@
 # app/services/read/prestashop_query.py
 
 from __future__ import annotations
-from typing import List
+from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from app.helpers.formatters import _iso
+from app.repos.prestashop.carts_read import CartsReadRepo
 from app.repos.prestashop.payments_read import PaymentsReadRepo
 from app.repos.prestashop.orders_read import OrdersReadRepo
 from app.repos.prestashop.eol_read import EOLOutReadRepo
 from app.repos.prestashop.pagespeed_read import PageSpeedReadRepo
-from app.schemas.prestashop import PageSpeedDTO, PageSpeedsListDTO
+from app.schemas.prestashop import PageSpeedDTO, AbandonedCartDTO
 
 from app.schemas.prestashop import (
     PaymentMethodDTO,
@@ -23,6 +24,7 @@ class PrestashopQueryService:
         self._orders = OrdersReadRepo(db)
         self._eol = EOLOutReadRepo(db)
         self._pagespeed = PageSpeedReadRepo(db)
+        self._carts = CartsReadRepo(db)
 
     # Payments
     def get_payments(self) -> List[PaymentMethodDTO]:
@@ -92,6 +94,21 @@ class PrestashopQueryService:
                 html_bytes=int(r["html_bytes"]),
                 headers=r["headers"],
                 sanity=r["sanity"],
+                observed_at=r["observed_at"].isoformat(),
+            )
+            for r in rows
+        ]
+
+    # Abandoned Carts
+    def get_abandoned_carts(self) -> list[AbandonedCartDTO]:
+        rows = self._carts.latest()
+        return [
+            AbandonedCartDTO(
+                id_cart=r["id_cart"],
+                id_customer=r["id_customer"],
+                items=r["items"],
+                hours_stale=r["hours_stale"],
+                status=r["status"],
                 observed_at=r["observed_at"].isoformat(),
             )
             for r in rows

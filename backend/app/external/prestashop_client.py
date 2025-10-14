@@ -219,6 +219,31 @@ class PrestashopClient:
             "html_text": html_text,
         }
 
+    # -------------------------------
+    # Stale Carts
+    # -------------------------------
+    def fetch_carts_stale(self, hours: int | None = None, limit: int | None = None,
+                          max_days: int | None = None, min_items: int | None = None) -> list[dict]:
+        params = {"PHP_AUTH_USER": self.api_key}
+        params.update({
+            "hours": hours or settings.PS_CART_STALE_WARN_H,
+            "limit": limit or settings.PS_CART_STALE_LIMIT,
+            "max_days": max_days or settings.PS_CART_STALE_MAX_DAYS,
+            "min_items": (settings.PS_CART_STALE_MIN_ITEMS if min_items is None else min_items),
+        })
+        if hours is None: hours = settings.PS_CART_STALE_WARN_H
+        if limit is None: limit = settings.PS_CART_STALE_LIMIT
+        params.update({"hours": hours, "limit": limit})
 
-
-
+        headers = {"User-Agent": self.user_agent, "Accept": "application/json"}
+        resp = self._session.get(
+            settings.PS_CHECK_CARTS_STALE_URL,
+            params=params, headers=headers,
+            timeout=(3, self.timeout), verify=self._verify
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        rows = data.get("data") or []
+        if not isinstance(rows, list):
+            raise RuntimeError(f"Unexpected response from carts_stale: {data!r}")
+        return rows

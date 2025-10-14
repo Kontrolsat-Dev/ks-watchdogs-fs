@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.core.db import get_db  # garante que tens este helper
 from app.services.read.prestashop_query import PrestashopQueryService
-from app.schemas.prestashop import PageSpeedsListDTO, PaymentsListDTO, DelayedOrdersListDTO, EOLProductsListDTO
+from app.schemas.prestashop import PageSpeedsListDTO, PaymentsListDTO, DelayedOrdersListDTO, EOLProductsListDTO, \
+    AbandonedCartsListDTO
 
 router = APIRouter(prefix="/prestashop", tags=["prestashop"])
 
@@ -32,4 +33,10 @@ def get_eol(db: Session = Depends(get_db)):
 def list_pagespeed(db: Session = Depends(get_db)):
     svc = PrestashopQueryService(db)
     items = svc.get_pagespeed()
+    return {"ok": True, "count": len(items), "items": items}
+
+@router.get("/carts/abandoned", response_model=AbandonedCartsListDTO)
+def list_abandoned_carts(db: Session = Depends(get_db)):
+    svc = PrestashopQueryService(db)
+    items = svc.get_abandoned_carts()
     return {"ok": True, "count": len(items), "items": items}

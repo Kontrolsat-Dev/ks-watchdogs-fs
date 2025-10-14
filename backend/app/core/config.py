@@ -7,7 +7,6 @@ from typing import List, Literal
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True)
-
     # General
     TIMEZONE: str = "Europe/Lisbon"
     # ---------------
@@ -58,6 +57,13 @@ class Settings(BaseSettings):
     PS_PAGESPEED_PRODUCT_TOTAL_CRIT: int = 2000
     PS_PAGESPEED_PRODUCT_HTML_WARN: int = 320_000
     PS_PAGESPEED_PRODUCT_HTML_CRIT: int = 900_000
+    # --> Carrinhos abandonados
+    PS_CHECK_CARTS_STALE_URL:str = "https://domain.com/__watchdogs/carts_stale.php"
+    PS_CART_STALE_MAX_DAYS:int = 14
+    PS_CART_STALE_MIN_ITEMS:int = 1
+    PS_CART_STALE_WARN_H: int = 6
+    PS_CART_STALE_CRIT_H: int = 12
+    PS_CART_STALE_LIMIT: int = 50
 
 
 settings = Settings()

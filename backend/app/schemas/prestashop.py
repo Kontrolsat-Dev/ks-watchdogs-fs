@@ -72,3 +72,18 @@ class PageSpeedsListDTO(BaseModel):
     ok: bool
     count: int
     items: List[PageSpeedDTO]
+
+# Abandoned Carts
+class AbandonedCartDTO(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
+    id_cart: int
+    id_customer: int
+    items: int
+    hours_stale: int
+    status: Status
+    observed_at: str
+
+class AbandonedCartsListDTO(BaseModel):
+    ok: bool
+    count: int
+    items: list[AbandonedCartDTO]
