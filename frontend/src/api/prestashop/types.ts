@@ -60,3 +60,19 @@ export interface ProductsEolReponse {
   counts?: ProductsEolCount;
   items?: ProductEol[];
 }
+
+// Abandoned carts
+export interface CartAbandoned {
+  id_cart: number;
+  id_customer: number;
+  hours_stale: number;
+  items: number;
+  status: "ok" | "warning" | "critical" | string;
+  observed_at: string;
+}
+
+export interface CartAbandonedResponse {
+  ok: boolean;
+  count: number;
+  items: CartAbandoned[];
+}

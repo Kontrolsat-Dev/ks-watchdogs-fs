@@ -26,3 +26,9 @@ export function timeAgo(iso?: string) {
   const days = Math.round(hrs / 24);
   return rtf.format(-days, "day");
 }
+
+export function formatHours(h?: number) {
+  if (h == null) return "—";
+  const days = h / 24;
+  return `${h}h ${days >= 1 ? `(~${days.toFixed(1)}d)` : ""}`.trim();
+}

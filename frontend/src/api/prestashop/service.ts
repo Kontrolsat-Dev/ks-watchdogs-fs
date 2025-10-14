@@ -2,6 +2,7 @@
 import { HttpClient } from "@/lib/http-client";
 import { Endpoints } from "@/constants/endpoints";
 import type {
+  CartAbandonedResponse,
   DelayedOrdersResponse,
   PaymentsResponse,
   ProductsEolReponse,
@@ -17,6 +18,12 @@ export class PrestashopService {
   getDelayedOrders() {
     return this.http.get<DelayedOrdersResponse>(
       Endpoints.PRESTASHOP_ORDERS_DELAYED
+    );
+  }
+
+  getAbandonedCarts() {
+    return this.http.get<CartAbandonedResponse>(
+      Endpoints.PRESTASHOP_ABANDONED_CARTS
     );
   }
 

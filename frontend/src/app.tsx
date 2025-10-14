@@ -16,6 +16,7 @@ import PaymentsPage from "@/features/payments";
 import ProductsEolPage from "@/features/products/eol";
 import SystemRunsPage from "./features/system/runs";
 import PagesLoadingPage from "./features/pages/loading";
+import CartsAbandonedPage from "./features/carts/abadoned";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +44,10 @@ export default function App() {
               <Route
                 path="/prestashop/orders/delayed"
                 element={<OrdersDelayedPage />}
+              />
+              <Route
+                path="/prestashop/carts/abandoned"
+                element={<CartsAbandonedPage />}
               />
               <Route
                 path="/prestashop/products/eol"
