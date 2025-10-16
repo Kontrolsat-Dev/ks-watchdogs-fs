@@ -64,6 +64,9 @@ class Settings(BaseSettings):
     PS_CART_STALE_WARN_H: int = 6
     PS_CART_STALE_CRIT_H: int = 12
     PS_CART_STALE_LIMIT: int = 50
+    # --> KPI
+    PS_KPI_EMP_TIMESERIES_URL: str = "https://domain.com/__watchdogs/kpi_employee_timeseries.php"
+    PS_KPI_EMP_PERFORMANCE_URL: str = "https://domain.com/__watchdogs/kpi_employee_performance.php"
 
 
 settings = Settings()

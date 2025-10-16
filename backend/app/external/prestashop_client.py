@@ -9,11 +9,11 @@ from app.core.config import settings
 
 class PrestashopClient:
     def __init__(
-            self,
-            base_url: str | None = None,
-            api_key: str | None = None,
-            timeout: int | None = None,
-            user_agent: str | None = None,
+        self,
+        base_url: str | None = None,
+        api_key: str | None = None,
+        timeout: int | None = None,
+        user_agent: str | None = None,
     ) -> None:
         self.base_url = base_url or settings.PS_BASE_URL
         # Sec
@@ -49,7 +49,6 @@ class PrestashopClient:
             "Accept": "application/json",
         }
 
-        # timeout (connect, read)
         resp = self._session.get(
             settings.PS_CHECK_PAYMENT_URL,
             params=params,
@@ -73,8 +72,10 @@ class PrestashopClient:
         headers = {"User-Agent": self.user_agent, "Accept": "application/json"}
         resp = self._session.get(
             settings.PS_CHECK_ORDERS_URL,
-            params=params, headers=headers,
-            timeout=(3, self.timeout), verify=self._verify,
+            params=params,
+            headers=headers,
+            timeout=(3, self.timeout),
+            verify=self._verify,
         )
         resp.raise_for_status()
         data = resp.json()
@@ -141,8 +142,6 @@ class PrestashopClient:
     # Pages Speed Test
     # -------------------------------
     def fetch_pagespeed(self, page_type: str = "product") -> dict:
-        import time
-
         endpoint = settings.PS_HOME_URL if page_type == "home" else settings.PS_PRODUCT_URL
         headers = {
             "User-Agent": self.user_agent,
@@ -161,7 +160,6 @@ class PrestashopClient:
         size = 0
         first_chunk_at = None
 
-        # LÊ APENAS UMA VEZ
         for chunk in resp.iter_content(chunk_size=16384):
             if not chunk:
                 continue
@@ -172,7 +170,7 @@ class PrestashopClient:
         ended = time.perf_counter()
         resp.close()
 
-        # fallback raro: se algum proxy quebrou o stream e size==0, faz um GET normal
+        # fallback: se size==0, uma segunda request simples
         if size == 0:
             resp2 = self._session.get(
                 endpoint, headers=headers, timeout=(3, self.timeout), verify=self._verify, stream=False
@@ -180,20 +178,14 @@ class PrestashopClient:
             status = resp2.status_code
             body2 = resp2.content or b""
             size = len(body2)
-            # usa o elapsed como proxy de TTFB neste fallback
             ttfb_ms = int(resp2.elapsed.total_seconds() * 1000)
-            total_ms = ttfb_ms  # com fallback não temos medição granular
+            total_ms = ttfb_ms
             headers_l = {k.lower(): v for k, v in resp2.headers.items()}
             html_text = body2.decode(errors="ignore")
         else:
             ttfb_ms = int(((first_chunk_at or ended) - started) * 1000)
             total_ms = int((ended - started) * 1000)
             headers_l = {k.lower(): v for k, v in resp.headers.items()}
-            # já consumimos tudo acima; não faças nova leitura — html virá do tamanho medido
-            # como não guardámos os bytes, só precisamos do texto p/ sanidade:
-            # para evitar nova request grande, lê o corpo via Segunda request apenas se precisares mesmo do HTML:
-            # aqui vamos fazer uma segunda request leve SEM stream (custa 1 ida) para obter o HTML para sanidade
-            # (se preferires evitar 2ª request, acumula os chunks numa lista e faz join)
             resp_full = self._session.get(
                 endpoint, headers=headers, timeout=(3, self.timeout), verify=self._verify, stream=False
             )
@@ -222,8 +214,13 @@ class PrestashopClient:
     # -------------------------------
     # Stale Carts
     # -------------------------------
-    def fetch_carts_stale(self, hours: int | None = None, limit: int | None = None,
-                          max_days: int | None = None, min_items: int | None = None) -> list[dict]:
+    def fetch_carts_stale(
+        self,
+        hours: int | None = None,
+        limit: int | None = None,
+        max_days: int | None = None,
+        min_items: int | None = None,
+    ) -> list[dict]:
         params = {"PHP_AUTH_USER": self.api_key}
         params.update({
             "hours": hours or settings.PS_CART_STALE_WARN_H,
@@ -231,15 +228,19 @@ class PrestashopClient:
             "max_days": max_days or settings.PS_CART_STALE_MAX_DAYS,
             "min_items": (settings.PS_CART_STALE_MIN_ITEMS if min_items is None else min_items),
         })
-        if hours is None: hours = settings.PS_CART_STALE_WARN_H
-        if limit is None: limit = settings.PS_CART_STALE_LIMIT
+        if hours is None:
+            hours = settings.PS_CART_STALE_WARN_H
+        if limit is None:
+            limit = settings.PS_CART_STALE_LIMIT
         params.update({"hours": hours, "limit": limit})
 
         headers = {"User-Agent": self.user_agent, "Accept": "application/json"}
         resp = self._session.get(
             settings.PS_CHECK_CARTS_STALE_URL,
-            params=params, headers=headers,
-            timeout=(3, self.timeout), verify=self._verify
+            params=params,
+            headers=headers,
+            timeout=(3, self.timeout),
+            verify=self._verify,
         )
         resp.raise_for_status()
         data = resp.json()
@@ -247,3 +248,75 @@ class PrestashopClient:
         if not isinstance(rows, list):
             raise RuntimeError(f"Unexpected response from carts_stale: {data!r}")
         return rows
+
+    # -------------------------------
+    # KPI Employees: timeseries
+    # -------------------------------
+    def fetch_kpi_employee_timeseries(
+        self,
+        *,
+        role: str,
+        gran: str,
+        since: str | None = None,
+        until: str | None = None,
+    ) -> dict:
+        params = {
+            "PHP_AUTH_USER": self.api_key,
+            "role": role,   # "prep" | "invoice"
+            "gran": gran,   # "day" | "week" | "month" | "year"
+            "since": since,
+            "until": until,
+            "limit": 50000,
+        }
+        headers = {"User-Agent": self.user_agent, "Accept": "application/json"}
+        resp = self._session.get(
+            settings.PS_KPI_EMP_TIMESERIES_URL,   # <-- corrigido (sem PS_)
+            params=params,
+            headers=headers,
+            timeout=(3, self.timeout),
+            verify=self._verify,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        rows = data.get("data") or []
+        if not isinstance(rows, list):
+            raise RuntimeError(f"Unexpected KPI timeseries response: {data!r}")
+        return {"meta": {k: data.get(k) for k in ("role", "gran", "since", "until")}, "rows": rows}
+
+    # -------------------------------
+    # KPI Employees: performance (ranking)
+    # -------------------------------
+    def fetch_kpi_employee_performance(
+        self,
+        *,
+        role: str,
+        since: str | None = None,
+        until: str | None = None,
+        order_by: str = "avg",   # "avg" | "n" | "min" | "max"
+        order_dir: str = "asc",  # "asc" | "desc"
+        limit: int = 200,
+    ) -> dict:
+        params = {
+            "PHP_AUTH_USER": self.api_key,
+            "role": role,
+            "since": since,
+            "until": until,
+            "order_by": order_by,
+            "order_dir": order_dir,
+            "limit": limit,
+        }
+        headers = {"User-Agent": self.user_agent, "Accept": "application/json"}
+        resp = self._session.get(
+            settings.PS_KPI_EMP_PERFORMANCE_URL,  # <-- corrigido (sem PS_)
+            params=params,
+            headers=headers,
+            timeout=(3, self.timeout),
+            verify=self._verify,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        rows = data.get("data") or []
+        if not isinstance(rows, list):
+            raise RuntimeError(f"Unexpected KPI performance response: {data!r}")
+        meta = {k: data.get(k) for k in ("role", "since", "until", "order_by", "order_dir", "limit")}
+        return {"meta": meta, "rows": rows}
