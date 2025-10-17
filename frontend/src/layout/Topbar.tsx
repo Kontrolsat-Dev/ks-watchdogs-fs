@@ -16,16 +16,16 @@ import { useTheme } from "@/providers/theme-provider";
 
 type Props = {
   onToggleMobile: () => void; // abre/fecha gaveta no mobile
-  onToggleCollapse: () => void; // colapsa/expande no desktop
+  onToggleMini: () => void; // alterna mini/expandida no desktop
   isSidebarOpen: boolean; // estado da gaveta no mobile
-  collapsed: boolean; // estado colapsado no desktop
+  mini: boolean; // estado "mini" (largura) no desktop
 };
 
 export default function Topbar({
   onToggleMobile,
-  onToggleCollapse,
+  onToggleMini,
   isSidebarOpen,
-  collapsed,
+  mini,
 }: Props) {
   const { data, isFetching, refetch, isError } = useHealthz();
 
@@ -59,15 +59,17 @@ export default function Topbar({
             )}
           </Button>
 
-          {/* Desktop: colapsar/expandir sidebar */}
+          {/* Desktop: mini/expandir sidebar (largura) */}
           <Button
             variant="link"
             size="icon"
-            onClick={onToggleCollapse}
-            aria-label={collapsed ? "Expandir navegação" : "Colapsar navegação"}
+            onClick={onToggleMini}
+            aria-label={
+              mini ? "Expandir barra lateral" : "Colapsar barra lateral"
+            }
             className="hidden md:inline-flex"
           >
-            {collapsed ? (
+            {mini ? (
               <ChevronRight className="h-5 w-5" />
             ) : (
               <ChevronLeft className="h-5 w-5" />
