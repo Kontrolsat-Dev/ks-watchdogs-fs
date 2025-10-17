@@ -5,7 +5,7 @@ from pydantic import Field
 from typing import List, Literal
 
 
-class Settings(BaseSettings):
+class Settings(BaseSettings):    
     model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True)
     # General
     TIMEZONE: str = "Europe/Lisbon"
@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     # App
     APP_ENV: Literal["dev", "prod", "test"] = "dev"   # ← antes: str = True
     APP_PORT: int = 8000
-    CORS_ORIGINS: List[str] = Field(default_factory=lambda: ["http://localhost:5173"])
+    CORS_ORIGINS: List[str] = Field(default_factory=lambda: ["http://localhost:5173", "http://127.0.0.1:5173", "http://192.168.1.115:5173"])
     # ---------------
     # Database
     DATABASE_URL: str = 'sqlite:///./database/database.sqlite'

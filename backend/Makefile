@@ -17,6 +17,7 @@ UV ?=
 # -------- App config --------
 APP       ?= apps.api_main:app         # muda para apps.api_main:app se esse for o entrypoint
 HOST      ?= 127.0.0.1
+HOST_LIVE      ?= 0.0.0.0
 PORT      ?= 8000
 LOG_LEVEL ?= info
 
@@ -45,6 +46,9 @@ endif
 ## Arranca o servidor em modo dev (reload)
 dev: install
 	$(UVICORN) $(APP) --host $(HOST) --port $(PORT) --reload --log-level $(LOG_LEVEL)
+
+prod: install
+	$(UVICORN) $(APP) --host $(HOST_LIVE) --port $(PORT) --reload --log-level $(LOG_LEVEL)
 
 ## Limpa artefactos básicos
 clean:
