@@ -20,4 +20,13 @@ export const Endpoints = Object.freeze({
     import.meta.env.VITE_PRESTASHOP_PAGES_STATUS || "/pagespeed",
   PRESTASHOP_PRODUCTS_EOL:
     import.meta.env.VITE_PRESTASHOP_PRODUCTS_EOL || "/products/eol",
+  // --------------------------------
+  // -------- KPI Endpoints ---------
+  // --------------------------------
+  KPI_EMPLOYEE_ORDERS_PROCESSING_TIMESERIES:
+    import.meta.env.VITE_KPI_EMPLOYEE_ORDERS_PROCESSING_TIMESERIES ||
+    "kpi/employees/timeseries",
+  KPI_EMPLOYEE_ORDERS_PROCESSING_PERFORMANCE:
+    import.meta.env.VITE_KPI_EMPLOYEE_ORDERS_PROCESSING_PERFORMANCE ||
+    "/kpi/employees/performance",
 });

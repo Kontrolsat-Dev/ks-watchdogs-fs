@@ -17,6 +17,8 @@ import ProductsEolPage from "@/features/products/eol";
 import SystemRunsPage from "./features/system/runs";
 import PagesSpedPage from "./features/pages/speed";
 import CartsAbandonedPage from "./features/carts/abadoned";
+import KpiOrdersPerformancePage from "./features/kpi/orders/performance";
+import KpiOrdersTimeseriesPage from "./features/kpi/orders/timeseries";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,6 +58,15 @@ export default function App() {
               <Route
                 path="/prestashop/pages/loading"
                 element={<PagesSpedPage />}
+              />
+              {/* Kpi */}
+              <Route
+                path="/kpi/orders/performance"
+                element={<KpiOrdersPerformancePage />}
+              />
+              <Route
+                path="/kpi/orders/timeseries"
+                element={<KpiOrdersTimeseriesPage />}
               />
               {/* System */}
               <Route path="/system/runs" element={<SystemRunsPage />} />
