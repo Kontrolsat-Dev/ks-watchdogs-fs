@@ -2,7 +2,8 @@ export const Endpoints = Object.freeze({
   // --------------------------------
   // ------------- BASE -------------
   // --------------------------------
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1",
+  BASE_URL:
+    import.meta.env.VITE_API_BASE_URL || "http://192.168.1.5:8002/api/v1",
   // --------------------------------
   // ------- System Endpoints -------
   // --------------------------------
