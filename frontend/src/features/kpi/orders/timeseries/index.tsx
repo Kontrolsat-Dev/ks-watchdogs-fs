@@ -294,7 +294,7 @@ export default function KpiOrdersTimeseriesPage() {
           </div>
         </CardHeader>
 
-        <CardContent className="grid gap-2 md:grid-cols-6">
+        <CardContent className="grid gap-2 grid-cols-4">
           {/* Função */}
           <Select
             value={role}
@@ -371,7 +371,7 @@ export default function KpiOrdersTimeseriesPage() {
           </Select>
 
           {/* Filtro por colaborador */}
-          <div className="md:col-span-1">
+          <div className="md:col-span-2">
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -461,7 +461,21 @@ export default function KpiOrdersTimeseriesPage() {
                     <CartesianGrid strokeDasharray="3 3" opacity={0.25} />
                     <XAxis dataKey="bucket" tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip />
+                    <Tooltip
+                      // fundo do tooltip mais escuro em dark (usa tokens do tema)
+                      contentStyle={{
+                        background: "var(--background)",
+                        border: "1px solid var(--border)",
+                        borderRadius: "10px",
+                        color: "var(--popover-foreground)",
+                        boxShadow: "0 8px 24px var(--background)",
+                      }}
+                      labelStyle={{ color: "var(--muted-foreground)" }}
+                      itemStyle={{ color: "var(--foreground)" }}
+                      // overlay de hover mais escuro no dark
+                      cursor={{ fill: "var(--muted)" }}
+                      wrapperClassName="recharts-tooltip-wrapper" // opcional, se quiseres estilizar via CSS
+                    />
                     {visibleNames.map((name, idx) =>
                       hidden[name] ? null : (
                         <Line

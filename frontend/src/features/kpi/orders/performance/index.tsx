@@ -21,7 +21,6 @@ import {
 import {
   RefreshCcw,
   Users2,
-  TrendingUp,
   Activity,
   Trophy,
   Timer,
@@ -77,7 +76,9 @@ export default function KpiOrdersPerformancePage() {
   const [untilStr, setUntilStr] = useState(toInputDate(until));
   const [orderBy, setOrderBy] = useState<OrderBy>("avg");
   const [orderDir, setOrderDir] = useState<OrderDir>("asc");
-  const [limit, setLimit] = useState<"50" | "100" | "200" | "500">("200");
+  const [limit, setLimit] = useState<
+    "50" | "100" | "200" | "500" | "1000" | "5000"
+  >("200");
   const [search, setSearch] = useState("");
   const [chartMetric, setChartMetric] = useState<ChartMetric>("avg_min");
 
@@ -222,7 +223,7 @@ export default function KpiOrdersPerformancePage() {
           </div>
         </CardHeader>
 
-        <CardContent className="grid gap-2 md:grid-cols-6">
+        <CardContent className="grid gap-2 grid-cols-4">
           {/* Função */}
           <Select
             value={role}
@@ -296,10 +297,12 @@ export default function KpiOrdersPerformancePage() {
               <SelectItem value="100">100</SelectItem>
               <SelectItem value="200">200</SelectItem>
               <SelectItem value="500">500</SelectItem>
+              <SelectItem value="1000">1000</SelectItem>
+              <SelectItem value="5000">5000</SelectItem>
             </SelectContent>
           </Select>
 
-          <div className="md:col-span-1">
+          <div className="md:col-span-2">
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -429,7 +432,23 @@ export default function KpiOrdersPerformancePage() {
                     width={120}
                     tick={{ fontSize: 12 }}
                   />
-                  <Tooltip />
+
+                  <Tooltip
+                    // fundo do tooltip mais escuro em dark (usa tokens do tema)
+                    contentStyle={{
+                      background: "var(--background)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "10px",
+                      color: "var(--popover-foreground)",
+                      boxShadow: "0 8px 24px var(--background)",
+                    }}
+                    labelStyle={{ color: "var(--muted-foreground)" }}
+                    itemStyle={{ color: "var(--foreground)" }}
+                    // overlay de hover mais escuro no dark
+                    cursor={{ fill: "var(--muted)" }}
+                    wrapperClassName="recharts-tooltip-wrapper" // opcional, se quiseres estilizar via CSS
+                  />
+
                   <Bar
                     dataKey={chartMetric}
                     fill={
@@ -437,6 +456,12 @@ export default function KpiOrdersPerformancePage() {
                     }
                     radius={[6, 6, 6, 6]}
                     isAnimationActive={false}
+                    // barra “ativa” no hover com ligeiro destaque que também respeita o tema
+                    activeBar={{
+                      fillOpacity: 0.95,
+                      stroke: "var(--primary)",
+                      strokeWidth: 1,
+                    }}
                   />
                 </BarChart>
               </ResponsiveContainer>
