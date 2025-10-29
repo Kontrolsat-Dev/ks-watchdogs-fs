@@ -1,8 +1,16 @@
+const RAW_BASE = import.meta.env.VITE_API_BASE_URL || "/api/v1";
+
+// Se vier absoluta (http/https), usa tal e qual; se vier relativa (/api/v1),
+// converte para absoluta com base no origin atual (ex.: https://wd.kontrolsat.com)
+const BASE_ABSOLUTE = /^https?:\/\//i.test(RAW_BASE)
+  ? RAW_BASE
+  : new URL(RAW_BASE, window.location.origin).toString().replace(/\/$/, "");
+
 export const Endpoints = Object.freeze({
   // --------------------------------
   // ------------- BASE -------------
   // --------------------------------
-  BASE_URL: import.meta.env.VITE_API_BASE_URL,
+  BASE_URL: BASE_ABSOLUTE,
   // --------------------------------
   // ------- System Endpoints -------
   // --------------------------------
