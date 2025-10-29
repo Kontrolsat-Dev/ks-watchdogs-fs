@@ -67,6 +67,11 @@ class Settings(BaseSettings):
     # --> KPI
     PS_KPI_EMP_TIMESERIES_URL: str = "https://domain.com/__watchdogs/kpi_employee_timeseries.php"
     PS_KPI_EMP_PERFORMANCE_URL: str = "https://domain.com/__watchdogs/kpi_employee_performance.php"
-
+    # N8N
+    N8N_REPORT_WEBHOOK_URL: str = ""
+    N8N_WEBHOOK_TOKEN: str = ""
+    KPI_REPORT_PERIOD: str = "day"
+    KPI_REPORT_LIMIT: int = 200
+    KPI_REPORT_PROMPT_VERSION: int = 1
 
 settings = Settings()

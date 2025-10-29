@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 class EmployeePointDTO(BaseModel):
     bucket: str
@@ -42,3 +42,16 @@ class EmployeePerformanceDTO(BaseModel):
     limit: int
     count: int
     items: List[EmployeePerformanceItemDTO]
+
+class KPIReportOutDTO(BaseModel):
+    ok: bool
+    cached: bool
+    report_id: str
+    period: Literal["day","week","month","year"]
+    since: str
+    until: str
+    generated_at: str
+    model: str | None = None
+    token_input: int | None = None
+    token_output: int | None = None
+    text: str

@@ -286,15 +286,17 @@ class PrestashopClient:
     # -------------------------------
     # KPI Employees: performance (ranking)
     # -------------------------------
+    # app/external/prestashop_client.py
+
     def fetch_kpi_employee_performance(
-        self,
-        *,
-        role: str,
-        since: str | None = None,
-        until: str | None = None,
-        order_by: str = "avg",   # "avg" | "n" | "min" | "max"
-        order_dir: str = "asc",  # "asc" | "desc"
-        limit: int = 200,
+            self,
+            *,
+            role: str,
+            since: str | None = None,
+            until: str | None = None,
+            order_by: str = "avg",
+            order_dir: str = "asc",
+            limit: int = 200,
     ) -> dict:
         params = {
             "PHP_AUTH_USER": self.api_key,
@@ -304,10 +306,11 @@ class PrestashopClient:
             "order_by": order_by,
             "order_dir": order_dir,
             "limit": limit,
+            "min_orders": 1,  # <<< garante resultados mesmo com poucas encomendas no dia
         }
         headers = {"User-Agent": self.user_agent, "Accept": "application/json"}
         resp = self._session.get(
-            settings.PS_KPI_EMP_PERFORMANCE_URL,  # <-- corrigido (sem PS_)
+            settings.PS_KPI_EMP_PERFORMANCE_URL,
             params=params,
             headers=headers,
             timeout=(3, self.timeout),
@@ -320,3 +323,4 @@ class PrestashopClient:
             raise RuntimeError(f"Unexpected KPI performance response: {data!r}")
         meta = {k: data.get(k) for k in ("role", "since", "until", "order_by", "order_dir", "limit")}
         return {"meta": meta, "rows": rows}
+

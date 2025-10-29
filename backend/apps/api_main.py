@@ -4,7 +4,6 @@ from __future__ import annotations
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
 from app.core.logging import setup_logging
 from app.core.middleware import RequestContextMiddleware
 from app.core.db import engine

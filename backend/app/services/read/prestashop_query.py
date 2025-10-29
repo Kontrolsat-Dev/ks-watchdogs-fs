@@ -42,7 +42,8 @@ class PrestashopQueryService:
 
     # Delayed Orders
     def get_delayed_orders(self) -> list[DelayedOrderDTO]:
-        rows = self._orders.latest_by_order()
+        # troca latest_by_order() -> latest_by_run()
+        rows = self._orders.latest_by_run(include_ok=False)
         return [
             DelayedOrderDTO(
                 id_order=int(r["id_order"]),
@@ -57,6 +58,7 @@ class PrestashopQueryService:
             )
             for r in rows
         ]
+
 
     # EOL Products
     def get_eol_products(self) -> list[EOLProductDTO]:
