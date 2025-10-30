@@ -4,8 +4,11 @@ from urllib3.util import Retry
 import certifi
 import time
 
+from app.core.logging import logging
 from app.core.config import settings
 
+
+log = logging.getLogger("watchdogs.prestashop_client")
 
 class PrestashopClient:
     def __init__(
@@ -33,13 +36,69 @@ class PrestashopClient:
             allowed_methods=frozenset(["GET"]),
             raise_on_status=False,
         )
-        adapter = HTTPAdapter(max_retries=retries, pool_connections=4, pool_maxsize=8)
+        adapter = HTTPAdapter(max_retries=retries,
+                              pool_connections=4, pool_maxsize=8)
         self._session.mount("https://", adapter)
         self._session.mount("http://", adapter)
         verify_env = str(getattr(settings, "PS_VERIFY_SSL", "true")).lower()
         self._verify = certifi.where() if verify_env != "false" else False
 
     # -------------------------------
+    # Login
+    # -------------------------------
+    def login(self, email: str, password: str) -> dict:
+        url = settings.PS_AUTH_VALIDATE
+        headers = {
+            settings.PS_AUTH_VALIDATE_HEADER: settings.PS_GENESYS_KEY,  # cuidado: não logar isto
+            "User-Agent": self.user_agent,
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
+
+        # NUNCA logar segredos
+        log.info("PrestashopClient.login: POST %s for email=%s UA=%s", url, email, self.user_agent)
+
+        try:
+            timeout = int(getattr(settings, "PS_TIMEOUT_S", 20))
+        except Exception:
+            timeout = 20
+
+        verify = certifi.where() if str(getattr(settings, "PS_AUTH_VERIFY_SSL", "true")).lower() != "false" else False
+
+        # Fazer o request
+        try:
+            resp = self._session.post(
+                url,
+                json={"email": email, "password": password},
+                headers=headers,
+                timeout=timeout,
+                verify=verify,
+            )
+        except Exception:
+            log.exception("PrestashopClient.login: request failed")
+            return {"id": email, "email": email, "name": "Guest", "role": "Guest"}
+
+        # Log da resposta (sem segredos / truncado)
+        log.info("PrestashopClient.login: HTTP %s", resp.status_code)
+        if resp.status_code >= 400:
+            log.warning("PrestashopClient.login: error body=%s", (resp.text[:500] if resp.text else "<empty>"))
+
+        # Parse seguro
+        data = {}
+        try:
+            data = resp.json() if resp.content else {}
+        except Exception:
+            log.debug("PrestashopClient.login: non-JSON response: %r", resp.text[:500] if resp.text else "<empty>")
+
+        user = data.get("user") or {}
+        return {
+            "id": data.get("id") or data.get("user_id") or email,
+            "email": data.get("email", email),
+            "name": user.get("name") or "Guest",
+            "role": (user.get("role") or "user") or "Guest",
+        }
+
+    # -------------------------------c
     # Payments
     # -------------------------------
     def fetch_payments(self) -> list[dict]:
@@ -61,7 +120,8 @@ class PrestashopClient:
         data = resp.json()
         rows = data.get("data") or []
         if not isinstance(rows, list):
-            raise RuntimeError(f"Unexpected response from PrestaShop API: {data!r}")
+            raise RuntimeError(
+                f"Unexpected response from PrestaShop API: {data!r}")
         return rows
 
     # -------------------------------
@@ -86,7 +146,8 @@ class PrestashopClient:
             rows = data.get("items") or data.get("data") or []
 
         if not isinstance(rows, list):
-            raise RuntimeError(f"Unexpected response for delayed orders: {type(rows)}")
+            raise RuntimeError(
+                f"Unexpected response for delayed orders: {type(rows)}")
 
         return rows
 
@@ -128,7 +189,8 @@ class PrestashopClient:
                 rows = data.get("items") or data.get("data") or []
 
             if not isinstance(rows, list):
-                raise RuntimeError(f"Unexpected EOL products response type: {type(rows)}")
+                raise RuntimeError(
+                    f"Unexpected EOL products response type: {type(rows)}")
 
             return rows
 
@@ -246,7 +308,8 @@ class PrestashopClient:
         data = resp.json()
         rows = data.get("data") or []
         if not isinstance(rows, list):
-            raise RuntimeError(f"Unexpected response from carts_stale: {data!r}")
+            raise RuntimeError(
+                f"Unexpected response from carts_stale: {data!r}")
         return rows
 
     # -------------------------------
@@ -320,7 +383,8 @@ class PrestashopClient:
         data = resp.json()
         rows = data.get("data") or []
         if not isinstance(rows, list):
-            raise RuntimeError(f"Unexpected KPI performance response: {data!r}")
-        meta = {k: data.get(k) for k in ("role", "since", "until", "order_by", "order_dir", "limit")}
+            raise RuntimeError(
+                f"Unexpected KPI performance response: {data!r}")
+        meta = {k: data.get(k) for k in (
+            "role", "since", "until", "order_by", "order_dir", "limit")}
         return {"meta": meta, "rows": rows}
-

@@ -5,7 +5,7 @@ from pydantic import Field
 from typing import List, Literal
 
 
-class Settings(BaseSettings):    
+class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True)
     # General
     TIMEZONE: str = "Europe/Lisbon"
@@ -13,16 +13,27 @@ class Settings(BaseSettings):
     # App
     APP_ENV: Literal["dev", "prod", "test"] = "dev"   # ← antes: str = True
     APP_PORT: int = 8000
-    CORS_ORIGINS: List[str] = Field(default_factory=lambda: ["http://localhost:5173", "http://127.0.0.1:5173", "http://192.168.1.115:5173"])
+    CORS_ORIGINS: List[str] = Field(default_factory=lambda: [
+                                    "http://localhost:5173", "http://127.0.0.1:5173", "http://192.168.1.115:5173"])
     # ---------------
     # Database
     DATABASE_URL: str = 'sqlite:///./database/database.sqlite'
+    # ---------------
+    # JWT
+    JWT_SECRET:str = "jwt_secret_example"
+    JWT_EXPIRE_MIN:int = 60
+    JWT_REFRESH_EXPIRE_MIN:int = 43200
     # ---------------
     # Prestashop
     PS_BASE_URL: str = 'http://domain.com'
     PS_TIMEOUT_S: int = 15
     PS_API_KEY: str = "prestashop-ws-key"
     PS_USER_AGENT: str = "prestashop-allowed-ua"
+    # --> Auth
+    PS_AUTH_VALIDATE: str = 'https://domain.com/__watchdogs/login.php'
+    PS_AUTH_VALIDATE_HEADER:str = "x-validation-header"
+    PS_GENESYS_KEY:str = "ps-api-key"
+    PS_AUTH_VERIFY_SSL: str = "true"
     # --> Payments
     PS_CHECK_PAYMENT_URL: str = "https://domain.com/__watchdogs/check_payments.php"
     PS_PAYMENTS_WARNING_HOURS: int = 48  # amarelo
@@ -58,9 +69,9 @@ class Settings(BaseSettings):
     PS_PAGESPEED_PRODUCT_HTML_WARN: int = 320_000
     PS_PAGESPEED_PRODUCT_HTML_CRIT: int = 900_000
     # --> Carrinhos abandonados
-    PS_CHECK_CARTS_STALE_URL:str = "https://domain.com/__watchdogs/carts_stale.php"
-    PS_CART_STALE_MAX_DAYS:int = 14
-    PS_CART_STALE_MIN_ITEMS:int = 1
+    PS_CHECK_CARTS_STALE_URL: str = "https://domain.com/__watchdogs/carts_stale.php"
+    PS_CART_STALE_MAX_DAYS: int = 14
+    PS_CART_STALE_MIN_ITEMS: int = 1
     PS_CART_STALE_WARN_H: int = 6
     PS_CART_STALE_CRIT_H: int = 12
     PS_CART_STALE_LIMIT: int = 50
@@ -73,5 +84,6 @@ class Settings(BaseSettings):
     KPI_REPORT_PERIOD: str = "day"
     KPI_REPORT_LIMIT: int = 200
     KPI_REPORT_PROMPT_VERSION: int = 1
+
 
 settings = Settings()
