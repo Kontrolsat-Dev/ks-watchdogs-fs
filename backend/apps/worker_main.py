@@ -3,22 +3,22 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from workers.scheduler import register_jobs
 from app.core.db import SessionLocal
 from app.core.logging import setup_logging
-
-import logging
+import logging, asyncio
+from datetime import timezone
 
 def main():
-    setup_logging()  # << habilita console + ficheiro
-    log = logging.getLogger("worker")
+    setup_logging()
+    log = logging.getLogger("wd.worker")
 
-    import asyncio
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
+    # scheduler AsyncIO
     sched = AsyncIOScheduler(event_loop=loop)
     register_jobs(sched, SessionLocal)
     sched.start()
 
-    log.info("worker started; scheduler running")
+    log.info("worker started; scheduler running (every 10 min)")
     try:
         loop.run_forever()
     except KeyboardInterrupt:

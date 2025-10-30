@@ -1,52 +1,54 @@
 # workers/scheduler.py
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from datetime import datetime, timedelta
+from apscheduler.triggers.cron import CronTrigger
+from pytz import timezone
+
+TZ = timezone("Europe/Lisbon")
 
 def register_jobs(sched: AsyncIOScheduler, db_session_factory):
+    # Imports locais para evitar custo no import global
     from workers.jobs.prestashop.prestashop_payments import run as ps_payments_run
     from workers.jobs.prestashop.prestashop_orders_delayed import run as ps_orders_run
     from workers.jobs.prestashop.prestashop_eol import run as ps_eol_run
     from workers.jobs.prestashop.prestashop_pagespeed import run as ps_pagespeed_run
     from workers.jobs.prestashop.prestashop_carts_stale import run as ps_carts_run
 
-    # Pagamentos
+    common = dict(
+        replace_existing=True,
+        max_instances=1,
+        coalesce=True,
+        misfire_grace_time=300,   # 5 min de tolerância
+        kwargs={"db_session_factory": db_session_factory},
+    )
+
+    # Todos a cada 10 minutos; segundos diferentes para escalonar a carga
     sched.add_job(
-        ps_payments_run, "interval",
-        minutes=1, next_run_time=datetime.now() + timedelta(seconds=2),
+        ps_payments_run,
+        CronTrigger(minute="*/10", second=2, timezone=TZ),
         id="prestashop.payments",
-        kwargs={"db_session_factory": db_session_factory},
-        max_instances=1, coalesce=True, replace_existing=True,
+        **common,
     )
-
-    # Encomendas atrasadas
     sched.add_job(
-        ps_orders_run, "interval",
-        minutes=5, next_run_time=datetime.now() + timedelta(seconds=5),
+        ps_orders_run,
+        CronTrigger(minute="*/10", second=6, timezone=TZ),
         id="prestashop.orders_delayed",
-        kwargs={"db_session_factory": db_session_factory},
-        max_instances=1, coalesce=True, replace_existing=True,
+        **common,
     )
-
     sched.add_job(
-        ps_eol_run, "interval",
-        minutes=5, next_run_time=datetime.now() + timedelta(seconds=5),
+        ps_eol_run,
+        CronTrigger(minute="*/10", second=10, timezone=TZ),
         id="prestashop.eol_products",
-        kwargs={"db_session_factory": db_session_factory},
-        max_instances=1, coalesce=True, replace_existing=True,
+        **common,
     )
-
     sched.add_job(
-        ps_pagespeed_run, "interval",
-        minutes=10, next_run_time=datetime.now() + timedelta(seconds=5),
+        ps_pagespeed_run,
+        CronTrigger(minute="*/10", second=14, timezone=TZ),
         id="prestashop.pagespeed",
-        kwargs={"db_session_factory": db_session_factory},
-        max_instances=1, coalesce=True, replace_existing=True,
+        **common,
     )
-
     sched.add_job(
-        ps_carts_run, "interval",
-        minutes=10, next_run_time=datetime.now() + timedelta(seconds=7),
+        ps_carts_run,
+        CronTrigger(minute="*/10", second=18, timezone=TZ),
         id="prestashop.carts_stale",
-        kwargs={"db_session_factory": db_session_factory},
-        max_instances=1, coalesce=True, replace_existing=True
+        **common,
     )
