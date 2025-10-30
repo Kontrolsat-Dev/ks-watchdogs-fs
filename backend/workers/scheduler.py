@@ -24,31 +24,31 @@ def register_jobs(sched: AsyncIOScheduler, db_session_factory):
     # Todos a cada 10 minutos; segundos diferentes para escalonar a carga
     sched.add_job(
         ps_payments_run,
-        CronTrigger(minute="*/10", second=2, timezone=TZ),
+        CronTrigger(minute="*/1", second=2, timezone=TZ),
         id="prestashop.payments",
         **common,
     )
     sched.add_job(
         ps_orders_run,
-        CronTrigger(minute="*/10", second=6, timezone=TZ),
+        CronTrigger(minute="*/1", second=6, timezone=TZ),
         id="prestashop.orders_delayed",
         **common,
     )
     sched.add_job(
         ps_eol_run,
-        CronTrigger(minute="*/10", second=10, timezone=TZ),
+        CronTrigger(minute="*/1", second=10, timezone=TZ),
         id="prestashop.eol_products",
         **common,
     )
     sched.add_job(
         ps_pagespeed_run,
-        CronTrigger(minute="*/10", second=14, timezone=TZ),
+        CronTrigger(minute="*/1", second=14, timezone=TZ),
         id="prestashop.pagespeed",
         **common,
     )
     sched.add_job(
         ps_carts_run,
-        CronTrigger(minute="*/10", second=18, timezone=TZ),
+        CronTrigger(minute="*/1", second=18, timezone=TZ),
         id="prestashop.carts_stale",
         **common,
     )
