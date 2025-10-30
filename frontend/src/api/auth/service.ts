@@ -4,13 +4,10 @@
 import { HttpClient } from "@/lib/http-client";
 import { Endpoints } from "@/constants/endpoints";
 import type { LoginRequest, LoginResponse } from "./types";
+import { http as defaultHttp } from "@/lib/http";
 
 export class AuthService {
-  private http: HttpClient;
-
-  constructor(http?: HttpClient) {
-    this.http = http ?? new HttpClient({ baseUrl: Endpoints.BASE_URL });
-  }
+  constructor(private http: HttpClient = defaultHttp) {}
 
   login(payload: LoginRequest) {
     return this.http.post<LoginResponse>(Endpoints.AUTH_LOGIN, payload);

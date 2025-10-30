@@ -61,12 +61,15 @@ export class HttpClient {
       this.opts.timeoutMs ?? 15000
     );
 
-    const token = this.opts.token?.();
+    // ✅ sanitiza "Bearer "
+    const rawToken = this.opts.token?.() ?? null;
+    const cleanToken = rawToken ? rawToken.replace(/^Bearer\s+/i, "") : null;
+
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       ...(this.opts.headers ?? {}),
       ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(cleanToken ? { Authorization: `Bearer ${cleanToken}` } : {}),
     };
 
     const fetchInit: RequestInit = {
@@ -84,6 +87,21 @@ export class HttpClient {
     const res = await fetch(url, fetchInit).finally(() =>
       clearTimeout(timeout)
     );
+
+    // (Opcional) debug quando 401/403
+    if (res.status === 401 || res.status === 403) {
+      const ct = res.headers.get("content-type") || "";
+      const body = ct.includes("json")
+        ? await res.json().catch(() => ({}))
+        : await res.text();
+      console.error("AUTH ERROR", {
+        url,
+        status: res.status,
+        body,
+        sentAuth: !!cleanToken,
+        tokenPreview: cleanToken?.slice(0, 12) + "...",
+      });
+    }
 
     const isJson = res.headers
       .get("content-type")

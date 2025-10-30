@@ -2,13 +2,10 @@
 import { HttpClient } from "@/lib/http-client";
 import { Endpoints } from "@/constants/endpoints";
 import type { HealthzResponse, RunsReponse } from "./types";
+import { http as defaultHttp } from "@/lib/http";
 
 export class SystemService {
-  private http: HttpClient;
-
-  constructor(http?: HttpClient) {
-    this.http = http ?? new HttpClient({ baseUrl: Endpoints.BASE_URL });
-  }
+  constructor(private http: HttpClient = defaultHttp) {}
 
   getHealthz() {
     return this.http.get<HealthzResponse>(Endpoints.HEALTHZ);

@@ -9,13 +9,10 @@ import type {
   EmployeeTimeseriesResponse,
   EmployeePerformanceResponse,
 } from "./types";
+import { http as defaultHttp } from "@/lib/http";
 
 export class KpiService {
-  private http: HttpClient;
-
-  constructor(http?: HttpClient) {
-    this.http = http ?? new HttpClient({ baseUrl: Endpoints.BASE_URL });
-  }
+  constructor(private http: HttpClient = defaultHttp) {}
 
   getOrdersProcessingTimeseries(params: {
     role: EmployeeRole;

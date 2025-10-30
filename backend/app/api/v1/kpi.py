@@ -3,6 +3,7 @@ from typing import Literal, Optional
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
+from app.core.deps import require_access_token
 from app.services.read.kpi_query import KPIQueryService
 from app.schemas.kpi import EmployeeTimeseriesDTO, EmployeePerformanceDTO, KPIReportOutDTO
 from app.services.commands.kpi.report_generate import KPIReportGenerateService
@@ -16,6 +17,7 @@ def employees_timeseries(
     gran: Literal["day", "week", "month", "year"] = Query("day"),
     since: Optional[str] = None,
     until: Optional[str] = None,
+    _=Depends(require_access_token)
 ):
     svc = KPIQueryService()
     res = svc.employees_timeseries(role=role, gran=gran, since=since, until=until)
@@ -37,6 +39,7 @@ def employees_performance(
     order_by: Literal["avg", "n", "min", "max"] = Query("avg"),
     order_dir: Literal["asc", "desc"] = Query("asc"),
     limit: int = Query(200, ge=1, le=5000),
+    _ = Depends(require_access_token)
 ):
     svc = KPIQueryService()
     res = svc.employees_performance(
@@ -65,6 +68,7 @@ def generate_kpi_report(
     since: Optional[str] = Query(None, description="YYYY-MM-DD (inclusive)"),
     until: Optional[str] = Query(None, description="YYYY-MM-DD (exclusive)"),
     force: bool = Query(False, description="Ignora cache e força novo report"),
+    _ = Depends(require_access_token)
 ):
     if not settings.N8N_REPORT_WEBHOOK_URL:
         raise HTTPException(status_code=500, detail="N8N webhook URL não configurada")

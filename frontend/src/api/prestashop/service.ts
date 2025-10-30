@@ -8,13 +8,10 @@ import type {
   PerfResponse,
   ProductsEolReponse,
 } from "./types";
+import { http as defaultHttp } from "@/lib/http";
 
 export class PrestashopService {
-  private http: HttpClient;
-
-  constructor(http?: HttpClient) {
-    this.http = http ?? new HttpClient({ baseUrl: Endpoints.BASE_URL });
-  }
+  constructor(private http: HttpClient = defaultHttp) {}
 
   getDelayedOrders() {
     return this.http.get<DelayedOrdersResponse>(
@@ -29,8 +26,6 @@ export class PrestashopService {
   }
 
   getPayments() {
-    console.log(Endpoints.PRESTASHOP_PAYMENTS);
-
     return this.http.get<PaymentsResponse>(Endpoints.PRESTASHOP_PAYMENTS);
   }
 
