@@ -48,7 +48,9 @@ export class KpiService {
 
     return this.http.get<EmployeePerformanceResponse>(
       Endpoints.KPI_EMPLOYEE_ORDERS_PROCESSING_PERFORMANCE,
-      { role, since, until, order_by, order_dir, limit }
+      {
+        params: { role, since, until, order_by, order_dir, limit },
+      }
     );
   }
 }

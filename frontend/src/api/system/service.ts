@@ -18,6 +18,6 @@ export class SystemService {
     const params = {
       limit: 100,
     };
-    return this.http.get<RunsReponse>(Endpoints.RUNS, params);
+    return this.http.get<RunsReponse>(Endpoints.RUNS, { params });
   }
 }
