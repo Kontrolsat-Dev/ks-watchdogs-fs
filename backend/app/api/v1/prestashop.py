@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db  # garante que tens este helper
+from app.core.deps import require_access_token
 from app.services.read.prestashop_query import PrestashopQueryService
 from app.schemas.prestashop import PageSpeedsListDTO, PaymentsListDTO, DelayedOrdersListDTO, EOLProductsListDTO, \
     AbandonedCartsListDTO
@@ -9,7 +10,7 @@ from app.schemas.prestashop import PageSpeedsListDTO, PaymentsListDTO, DelayedOr
 router = APIRouter(prefix="/prestashop", tags=["prestashop"])
 
 @router.get("/payments", response_model=PaymentsListDTO)
-def list_payments(db: Session = Depends(get_db)):
+def list_payments(db: Session = Depends(get_db), _=Depends(require_access_token)):
     svc = PrestashopQueryService(db)
     items = svc.get_payments()
     return {"ok": True, "count": len(items), "methods": items}
