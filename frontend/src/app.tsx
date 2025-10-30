@@ -19,6 +19,8 @@ import PagesSpedPage from "./features/pages/speed";
 import CartsAbandonedPage from "./features/carts/abadoned";
 import KpiOrdersPerformancePage from "./features/kpi/orders/performance";
 import KpiOrdersTimeseriesPage from "./features/kpi/orders/timeseries";
+import LoginPage from "./features/auth/login";
+import RequireAuth from "./layout/PublicLayout";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,38 +40,43 @@ export default function App() {
         <ThemeProvider defaultTheme="system">
           <Toaster position="bottom-right" richColors />
           <Routes>
-            {/* Layout route */}
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<HomePage />} />
-              {/* Prestashop  */}
-              <Route path="/prestashop/payments" element={<PaymentsPage />} />
-              <Route
-                path="/prestashop/orders/delayed"
-                element={<OrdersDelayedPage />}
-              />
-              <Route
-                path="/prestashop/carts/abandoned"
-                element={<CartsAbandonedPage />}
-              />
-              <Route
-                path="/prestashop/products/eol"
-                element={<ProductsEolPage />}
-              />
-              <Route
-                path="/prestashop/pages/loading"
-                element={<PagesSpedPage />}
-              />
-              {/* Kpi */}
-              <Route
-                path="/kpi/orders/performance"
-                element={<KpiOrdersPerformancePage />}
-              />
-              <Route
-                path="/kpi/orders/timeseries"
-                element={<KpiOrdersTimeseriesPage />}
-              />
-              {/* System */}
-              <Route path="/system/runs" element={<SystemRunsPage />} />
+            {/* Público */}
+            <Route path="/login" element={<LoginPage />} />
+
+            {/* Protegido */}
+            <Route element={<RequireAuth />}>
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<HomePage />} />
+                {/* Prestashop */}
+                <Route path="/prestashop/payments" element={<PaymentsPage />} />
+                <Route
+                  path="/prestashop/orders/delayed"
+                  element={<OrdersDelayedPage />}
+                />
+                <Route
+                  path="/prestashop/carts/abandoned"
+                  element={<CartsAbandonedPage />}
+                />
+                <Route
+                  path="/prestashop/products/eol"
+                  element={<ProductsEolPage />}
+                />
+                <Route
+                  path="/prestashop/pages/loading"
+                  element={<PagesSpedPage />}
+                />
+                {/* KPI */}
+                <Route
+                  path="/kpi/orders/performance"
+                  element={<KpiOrdersPerformancePage />}
+                />
+                <Route
+                  path="/kpi/orders/timeseries"
+                  element={<KpiOrdersTimeseriesPage />}
+                />
+                {/* System */}
+                <Route path="/system/runs" element={<SystemRunsPage />} />
+              </Route>
             </Route>
           </Routes>
         </ThemeProvider>

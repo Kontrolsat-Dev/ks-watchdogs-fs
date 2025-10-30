@@ -29,6 +29,8 @@ export class PrestashopService {
   }
 
   getPayments() {
+    console.log(Endpoints.PRESTASHOP_PAYMENTS);
+
     return this.http.get<PaymentsResponse>(Endpoints.PRESTASHOP_PAYMENTS);
   }
 

@@ -1,86 +1,117 @@
-// src/lib/http-client.ts (sem mudanças problemáticas)
-export type ParamValue =
+// src/lib/http-client.ts
+export type TokenProvider = () => string | null;
+
+export type QueryParamValue =
   | string
   | number
   | boolean
-  | Array<string | number | boolean>;
-export type Params = Record<string, ParamValue>;
+  | null
+  | undefined
+  | Array<string | number | boolean | null | undefined>;
+
+export type RequestOptions = Omit<RequestInit, "body" | "method"> & {
+  params?: Record<string, QueryParamValue>;
+};
+
+export type HttpClientOptions = {
+  baseUrl: string;
+  token?: TokenProvider;
+  headers?: Record<string, string>;
+  timeoutMs?: number;
+};
 
 export class HttpClient {
-  private base: URL;
-  private defaultHeaders: Record<string, string>;
-  private timeoutMs: number;
+  constructor(private opts: HttpClientOptions) {}
 
-  constructor(opts: {
-    baseUrl: string;
-    defaultHeaders?: Record<string, string>;
-    timeoutMs?: number;
-  }) {
-    this.base = new URL(opts.baseUrl);
-    this.defaultHeaders = {
-      Accept: "application/json",
-      ...(opts.defaultHeaders ?? {}),
-    };
-    this.timeoutMs = opts.timeoutMs ?? 15000;
-  }
+  private buildUrl(path: string, params?: RequestOptions["params"]): string {
+    const base = this.opts.baseUrl.endsWith("/")
+      ? this.opts.baseUrl
+      : this.opts.baseUrl + "/";
 
-  buildUrl(endpoint: string, params?: Params): string {
-    const url = new URL(this.base.toString());
-    const cleanBase = url.pathname.replace(/\/+$/, "");
-    const cleanEp = endpoint.replace(/^\/+/, "");
-    url.pathname = [cleanBase, cleanEp].filter(Boolean).join("/");
+    const isAbsolute = /^https?:\/\//i.test(path);
+    const cleanedPath = isAbsolute ? path : path.replace(/^\/+/, "");
+
+    const url = isAbsolute ? new URL(cleanedPath) : new URL(cleanedPath, base);
+
     if (params) {
-      for (const [k, v] of Object.entries(params)) {
-        if (Array.isArray(v))
-          v.forEach((it) => url.searchParams.append(k, String(it)));
-        else if (v != null) url.searchParams.set(k, String(v));
+      for (const [key, val] of Object.entries(params)) {
+        if (val == null) continue;
+        if (Array.isArray(val)) {
+          for (const v of val) {
+            if (v == null) continue;
+            url.searchParams.append(key, String(v));
+          }
+        } else {
+          url.searchParams.set(key, String(val));
+        }
       }
     }
     return url.toString();
   }
 
-  async request<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
+  private async request<T>(
+    path: string,
+    init?: RequestOptions & { method?: string; body?: unknown }
+  ): Promise<T> {
+    const url = this.buildUrl(path, init?.params);
+
     const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), this.timeoutMs);
-    try {
-      const res = await fetch(input, {
-        headers: { ...this.defaultHeaders, ...(init?.headers || {}) },
-        signal: controller.signal,
-        ...init,
-      });
-      const ct = res.headers.get("content-type") || "";
-      const isJson = ct.includes("application/json");
-      const url = typeof input === "string" ? input : (input as Request).url;
+    const timeout = setTimeout(
+      () => controller.abort(),
+      this.opts.timeoutMs ?? 15000
+    );
 
-      if (!res.ok) {
-        const snippet = (
-          isJson ? JSON.stringify(await res.json()) : await res.text()
-        ).slice(0, 300);
-        throw new Error(
-          `HTTP ${res.status} ${res.statusText} @ ${url}${
-            snippet ? ` — ${snippet}` : ""
-          }`
-        );
-      }
-      if (!isJson) throw new Error(`Non-JSON response @ ${url}`);
-      return (await res.json()) as T;
-    } finally {
-      clearTimeout(id);
-    }
+    const token = this.opts.token?.();
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+      ...(this.opts.headers ?? {}),
+      ...(init?.headers ?? {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+
+    const fetchInit: RequestInit = {
+      method: init?.method ?? "GET",
+      headers,
+      signal: controller.signal,
+      body:
+        init?.body !== undefined
+          ? typeof init.body === "string"
+            ? init.body
+            : JSON.stringify(init.body)
+          : undefined,
+    };
+
+    const res = await fetch(url, fetchInit).finally(() =>
+      clearTimeout(timeout)
+    );
+
+    const isJson = res.headers
+      .get("content-type")
+      ?.includes("application/json");
+    const body = isJson ? await res.json().catch(() => ({})) : await res.text();
+    if (!res.ok) throw new HttpError(res.status, body);
+    return body as T;
   }
 
-  get<T>(endpoint: string, params?: Params, init?: RequestInit) {
-    return this.request<T>(this.buildUrl(endpoint, params), {
-      method: "GET",
-      ...init,
-    });
+  get<T>(p: string, init?: RequestOptions) {
+    return this.request<T>(p, { method: "GET", ...(init || {}) });
   }
-  post<T>(endpoint: string, body?: unknown, init?: RequestInit) {
-    return this.request<T>(this.buildUrl(endpoint), {
-      method: "POST",
-      body: body ? JSON.stringify(body) : undefined,
-      headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
-      ...init,
-    });
+  post<T>(p: string, body?: unknown, init?: RequestOptions) {
+    return this.request<T>(p, { method: "POST", body, ...(init || {}) });
+  }
+  put<T>(p: string, body?: unknown, init?: RequestOptions) {
+    return this.request<T>(p, { method: "PUT", body, ...(init || {}) });
+  }
+  patch<T>(p: string, body?: unknown, init?: RequestOptions) {
+    return this.request<T>(p, { method: "PATCH", body, ...(init || {}) });
+  }
+  delete<T>(p: string, init?: RequestOptions) {
+    return this.request<T>(p, { method: "DELETE", ...(init || {}) });
+  }
+}
+
+export class HttpError extends Error {
+  constructor(public status: number, public data: unknown) {
+    super(`HTTP ${status}`);
   }
 }

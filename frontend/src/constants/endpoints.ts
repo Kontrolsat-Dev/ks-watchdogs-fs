@@ -17,6 +17,11 @@ export const Endpoints = Object.freeze({
   HEALTHZ: import.meta.env.VITE_API_HEALTH_URL || "/healthz",
   RUNS: import.meta.env.VITE_API_RUNS || "/runs",
   // --------------------------------
+  // ------- System Endpoints -------
+  // --------------------------------
+  AUTH_LOGIN: import.meta.env.VITE_API_AUTH_LOGIN || "/auth/login",
+  AUTH_ME: import.meta.env.VITE_API_AUTH_ME || "/auth/me",
+  // --------------------------------
   // ----- Prestashop Endpoints -----
   // --------------------------------
   PRESTASHOP_PAYMENTS: import.meta.env.VITE_PRESTASHOP_PAYMENTS || "/payments",

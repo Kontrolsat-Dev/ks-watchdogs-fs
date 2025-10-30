@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Topbar from "./Topbar";
 import Sidebar from "./Sidebar";
+import Footer from "./Footer";
 
 const STORAGE_KEY = "sidebar_mini_v1"; // novo significado: mini largura
 
@@ -42,6 +43,7 @@ const AppLayout: React.FC = () => {
           <main className="flex-1 overflow-auto px-8 pt-5 pb-10">
             <Outlet />
           </main>
+          <Footer />
         </div>
       </div>
     </div>

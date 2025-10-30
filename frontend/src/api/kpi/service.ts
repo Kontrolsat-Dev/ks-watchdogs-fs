@@ -25,7 +25,7 @@ export class KpiService {
   }) {
     return this.http.get<EmployeeTimeseriesResponse>(
       Endpoints.KPI_EMPLOYEE_ORDERS_PROCESSING_TIMESERIES,
-      params
+      { params }
     );
   }
 
