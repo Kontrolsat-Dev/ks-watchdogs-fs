@@ -42,6 +42,7 @@ const NAV_ITEMS: NavGroup[] = [
     name: "Ferramentas",
     icon: ToolCase,
     items: [
+      { to: "/pda", label: "PDA" },
       { to: "/patife", label: "Patife" },
       { to: "/policia", label: "Policia" },
       { to: "/gc", label: "Gestor de Campanhas" },
@@ -265,11 +266,11 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
               <div
                 id={contentId}
                 className={cn(
-                  "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out",
+                  "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ",
                   mini
                     ? "grid-rows-[0fr] opacity-0 pointer-events-none"
                     : isOpen
-                    ? "grid-rows-[1fr] opacity-100"
+                    ? "grid-rows-[1fr] opacity-100 mt-1"
                     : "grid-rows-[0fr] opacity-0"
                 )}
                 aria-hidden={mini || !isOpen}

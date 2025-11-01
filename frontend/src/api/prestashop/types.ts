@@ -7,9 +7,9 @@ export interface DelayedOrder {
   date_add: string; // ISO
   days_passed: number;
   id_state: number;
-  state_name: string; // <- CORRIGIDO (era number)
+  state_name: string;
   dropshipping: boolean;
-  status: OrderLevel | string; // se o backend por vezes manda outro valor
+  status: OrderLevel | string;
   observed_at: string; // ISO
 }
 

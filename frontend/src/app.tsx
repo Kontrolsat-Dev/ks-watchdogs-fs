@@ -21,6 +21,7 @@ import KpiOrdersPerformancePage from "./features/kpi/orders/performance";
 import KpiOrdersTimeseriesPage from "./features/kpi/orders/timeseries";
 import LoginPage from "./features/auth/login";
 import RequireAuth from "./layout/PublicLayout";
+import PdaPage from "./features/pda";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,6 +66,8 @@ export default function App() {
                   path="/prestashop/pages/loading"
                   element={<PagesSpedPage />}
                 />
+                {/* PDA */}
+                <Route path="/pda" element={<PdaPage />} />
                 {/* KPI */}
                 <Route
                   path="/kpi/orders/performance"

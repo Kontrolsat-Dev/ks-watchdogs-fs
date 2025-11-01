@@ -34,6 +34,10 @@ export const Endpoints = Object.freeze({
   PRESTASHOP_PRODUCTS_EOL:
     import.meta.env.VITE_PRESTASHOP_PRODUCTS_EOL || "/products/eol",
   // --------------------------------
+  // ------- TOOLS Endpoints --------
+  // --------------------------------
+  PDA_REPORT: import.meta.env.VITE_PDA_REPORT || "/tools/pda",
+  // --------------------------------
   // -------- KPI Endpoints ---------
   // --------------------------------
   KPI_EMPLOYEE_ORDERS_PROCESSING_TIMESERIES:
