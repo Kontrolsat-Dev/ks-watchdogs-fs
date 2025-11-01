@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.core.db import get_db  # garante que tens este helper
 from app.core.deps import require_access_token
-from app.services.read.prestashop_query import PrestashopQueryService
+from app.services.read.prestashop.prestashop_query import PrestashopQueryService
 from app.schemas.prestashop import PageSpeedsListDTO, PaymentsListDTO, DelayedOrdersListDTO, EOLProductsListDTO, \
     AbandonedCartsListDTO
 
@@ -24,7 +24,7 @@ def list_delayed_orders(db: Session = Depends(get_db), _=Depends(require_access_
 
 
 @router.get("/products/eol", response_model=EOLProductsListDTO)
-def get_eol(db: Session = Depends(get_db), _=Depends(require_access_token)):
+def list_product_eol(db: Session = Depends(get_db), _=Depends(require_access_token)):
     svc = PrestashopQueryService(db)
     items = svc.get_eol_products()
     counts = svc.get_eol_counts()

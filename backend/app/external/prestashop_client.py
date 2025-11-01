@@ -8,7 +8,7 @@ from app.core.logging import logging
 from app.core.config import settings
 
 
-log = logging.getLogger("watchdogs.prestashop_client")
+log = logging.getLogger("wd.prestashop_client")
 
 class PrestashopClient:
     def __init__(
@@ -55,7 +55,6 @@ class PrestashopClient:
             "Content-Type": "application/json",
         }
 
-        # NUNCA logar segredos
         log.info("PrestashopClient.login: POST %s for email=%s UA=%s", url, email, self.user_agent)
 
         try:
@@ -78,8 +77,6 @@ class PrestashopClient:
             log.exception("PrestashopClient.login: request failed")
             return {"id": email, "email": email, "name": "Guest", "role": "Guest"}
 
-        # Log da resposta (sem segredos / truncado)
-        log.info("PrestashopClient.login: HTTP %s", resp.status_code)
         if resp.status_code >= 400:
             log.warning("PrestashopClient.login: error body=%s", (resp.text[:500] if resp.text else "<empty>"))
 

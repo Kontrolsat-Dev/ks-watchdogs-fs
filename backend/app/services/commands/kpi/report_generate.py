@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 import requests
 
 from app.core.config import settings
-from app.services.read.kpi_query import KPIQueryService
+from app.services.read.kpi.kpi_query import KPIQueryService
 
 
 Period = Literal["day", "week", "month", "year"]

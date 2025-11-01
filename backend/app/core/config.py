@@ -84,6 +84,12 @@ class Settings(BaseSettings):
     KPI_REPORT_PERIOD: str = "day"
     KPI_REPORT_LIMIT: int = 200
     KPI_REPORT_PROMPT_VERSION: int = 1
+    # Tools
+    # --- PDA ---
+    TOOLS_PDA_API_KEY: str = "api-key-pda"
+    TOOLS_PDA_BASE_END: str = "https://www.domain.com/__fastLogixApi/reports/api"
+    TOOLS_PDA_GET_REPORTS: str ="https://www.domain.com/__fastLogixApi/reports/api/getReports.php"
+    TOOLS_PDA_UPDATE_REPORT: str ="https://www.domain.com/__fastLogixApi/reports/api/updateReport.php"
 
 
 settings = Settings()

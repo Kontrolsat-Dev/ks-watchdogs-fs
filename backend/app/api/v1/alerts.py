@@ -4,7 +4,7 @@ from typing import Literal
 
 from app.core.db import get_db
 from app.schemas.alerts import GroupedAlertsDTO
-from app.services.read.alerts_query import AlertsQueryService
+from app.services.read.alets.alerts_query import AlertsQueryService
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])
 

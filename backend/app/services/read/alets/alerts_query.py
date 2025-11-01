@@ -8,7 +8,7 @@ from app.schemas.alerts import (
     AlertsCountsDTO,
     GroupedAlertsDTO,
 )
-from app.services.read.prestashop_query import PrestashopQueryService
+from app.services.read.prestashop.prestashop_query import PrestashopQueryService
 
 
 def _sev_rank(s: str | Status) -> int:

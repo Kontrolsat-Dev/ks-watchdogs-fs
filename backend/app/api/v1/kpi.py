@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Query, Depends, HTTPException
 from typing import Literal, Optional
-from sqlalchemy.orm import Session
 
-from app.core.db import get_db
 from app.core.deps import require_access_token
-from app.services.read.kpi_query import KPIQueryService
-from app.schemas.kpi import EmployeeTimeseriesDTO, EmployeePerformanceDTO, KPIReportOutDTO
+from app.services.read.kpi.kpi_query import KPIQueryService
+from app.schemas.kpi import EmployeeTimeseriesDTO, EmployeePerformanceDTO
 from app.services.commands.kpi.report_generate import KPIReportGenerateService
 from app.core.config import settings
 

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
-from app.services.queries.runs import RunsQueryService
+from app.services.queries.runs.runs import RunsQueryService
 from app.schemas.runs import RunsListDTO
 
 router = APIRouter(prefix="/runs", tags=["runs"])
