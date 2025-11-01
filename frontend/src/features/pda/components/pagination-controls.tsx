@@ -30,7 +30,7 @@ export default function PaginationControls({
 }: PaginationControlsProps) {
   const total = meta?.total ?? 0;
   const hasNext = meta?.has_next ?? false;
-  const hasPrev = meta?.has_prev ?? false;
+  // const hasPrev = meta?.has_prev ?? false;
   const totalPages = meta && total > 0 ? Math.ceil(total / pageSize) : 1;
   const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const end =
