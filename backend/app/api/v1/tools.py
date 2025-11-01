@@ -10,8 +10,9 @@ router = APIRouter(prefix="/tools", tags=["tools"])
 
 @router.get("/pda", response_model=Page[Report])
 def list_pda_logs(
-    page: int = Query(1, ge=1),
-    page_size: int = Query(50, ge=1, le=200),
-):
+        _ = Depends(require_access_token),
+        page: int = Query(1, ge=1),
+        page_size: int = Query(50, ge=1, le=200),
+    ):
     service = PdaQueryService()
     return service.get_pda_report(page=page, page_size=page_size)
