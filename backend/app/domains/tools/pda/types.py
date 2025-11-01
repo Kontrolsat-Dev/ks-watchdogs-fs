@@ -21,5 +21,5 @@ class PdaReport:
     log_mode: str
     ts_client: Optional[datetime]
     state: str
-    date_add: Optional[datetime]
-    date_upd: Optional[datetime]
+    date_added: Optional[datetime]
+    date_updated: Optional[datetime]

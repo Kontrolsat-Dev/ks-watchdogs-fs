@@ -4,7 +4,7 @@
 from pydantic import BaseModel
 
 class Report(BaseModel):
-    id: str
+    id: int
     code: str
     message: str
     context_json: str
@@ -13,5 +13,5 @@ class Report(BaseModel):
     log_mode: str
     ts_client: str
     state: str
-    date_add: str
-    date_upd: str
+    date_added: str
+    date_updated: str

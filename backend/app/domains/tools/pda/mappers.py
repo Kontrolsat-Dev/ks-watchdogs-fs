@@ -51,16 +51,16 @@ def raw_row_to_domain(row: dict) -> PdaReport:
     Mapeia uma linha de dados bruto do PDA para um objeto PdaReport.
     """
     return PdaReport(
-        id         = str(row.get("id", "")).strip(),
-        code       = str(row.get("code", "")).strip(),
-        message    = (str(row.get("message", "")).strip()
-                      or str(row.get("context_json", "")).strip()),
-        context    = _parse_context(row.get("context_json")),
-        error_text = str(row.get("error_text", "")).strip(),
-        stack_text = str(row.get("stack_text", "")).strip(),
-        log_mode   = str(row.get("log_mode", "")).strip(),
-        ts_client  = _parse_dt(row.get("ts_client")),
-        state      = str(row.get("state", "")).strip(),
-        date_add   = _parse_dt(row.get("date_add")),
-        date_upd   = _parse_dt(row.get("date_upd")),
+        id           = int(row.get("id")),
+        code         = str(row.get("code", "")).strip(),
+        message      = (str(row.get("message", "")).strip()
+                       or str(row.get("context_json", "")).strip()),
+        context      = _parse_context(row.get("context_json")),
+        error_text   = str(row.get("error_text", "")).strip(),
+        stack_text   = str(row.get("stack_text", "")).strip(),
+        log_mode     = str(row.get("log_mode", "")).strip(),
+        ts_client    = _parse_dt(row.get("ts_client")),
+        state        = str(row.get("state", "")).strip(),
+        date_added   = _parse_dt(row.get("date_add")),
+        date_updated = _parse_dt(row.get("date_upd")),
     )

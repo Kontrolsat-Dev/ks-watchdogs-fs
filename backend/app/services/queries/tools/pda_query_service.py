@@ -51,8 +51,8 @@ class PdaQueryService:
                 log_mode=dr.log_mode,
                 ts_client=(dr.ts_client.isoformat() if dr.ts_client else ""),
                 state=dr.state,
-                date_add=(dr.date_add.isoformat() if dr.date_add else ""),
-                date_upd=(dr.date_upd.isoformat() if dr.date_upd else ""),
+                date_added=(dr.date_added.isoformat() if dr.date_added else ""),
+                date_updated=(dr.date_updated.isoformat() if dr.date_updated else ""),
             )
             for dr in page_rows
         ]
