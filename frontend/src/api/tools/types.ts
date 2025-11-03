@@ -21,8 +21,8 @@ export interface PdaReport {
   // ⚠️ Confere com o backend: usas "date_added"/"date_updated" aqui,
   // mas no backend tens devolvido "date_add"/"date_upd" (ou ISO).
   // Mantém consistente:
-  date_add: string;
-  date_upd: string;
+  date_added: string;
+  date_updated: string;
 }
 
 export interface PdaReportsResponse {
