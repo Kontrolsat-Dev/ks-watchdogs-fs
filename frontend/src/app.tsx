@@ -21,7 +21,12 @@ import KpiOrdersPerformancePage from "./features/kpi/orders/performance";
 import KpiOrdersTimeseriesPage from "./features/kpi/orders/timeseries";
 import LoginPage from "./features/auth/login";
 import RequireAuth from "./layout/PublicLayout";
+
+// Tools
+// --- PDA
 import PdaPage from "./features/pda";
+// --- Patife
+import PatifeHealthzPage from "./features/patife";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -68,6 +73,8 @@ export default function App() {
                 />
                 {/* PDA */}
                 <Route path="/pda" element={<PdaPage />} />
+                {/* Patife */}
+                <Route path="/patife" element={<PatifeHealthzPage />} />
                 {/* KPI */}
                 <Route
                   path="/kpi/orders/performance"

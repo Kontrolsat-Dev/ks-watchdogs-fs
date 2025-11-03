@@ -37,6 +37,8 @@ export const Endpoints = Object.freeze({
   // ------- TOOLS Endpoints --------
   // --------------------------------
   PDA_REPORT: import.meta.env.VITE_PDA_REPORT || "/tools/pda",
+  PATIFE_HEALTHZ:
+    import.meta.env.VITE_PATIFE_HEALTHZ || "/tools/patife/healthz",
   // --------------------------------
   // -------- KPI Endpoints ---------
   // --------------------------------

@@ -5,6 +5,7 @@ from pytz import timezone
 
 TZ = timezone("Europe/Lisbon")
 
+
 def register_jobs(sched: AsyncIOScheduler, db_session_factory):
     # Imports locais para evitar custo no import global
     from workers.jobs.prestashop.prestashop_payments import run as ps_payments_run
@@ -12,6 +13,7 @@ def register_jobs(sched: AsyncIOScheduler, db_session_factory):
     from workers.jobs.prestashop.prestashop_eol import run as ps_eol_run
     from workers.jobs.prestashop.prestashop_pagespeed import run as ps_pagespeed_run
     from workers.jobs.prestashop.prestashop_carts_stale import run as ps_carts_run
+    from workers.jobs.patife.healthz import run as pt_healthz_run
 
     common = dict(
         replace_existing=True,
@@ -21,7 +23,6 @@ def register_jobs(sched: AsyncIOScheduler, db_session_factory):
         kwargs={"db_session_factory": db_session_factory},
     )
 
-    # Todos a cada 10 minutos; segundos diferentes para escalonar a carga
     sched.add_job(
         ps_payments_run,
         CronTrigger(minute="*/1", second=2, timezone=TZ),
@@ -51,4 +52,14 @@ def register_jobs(sched: AsyncIOScheduler, db_session_factory):
         CronTrigger(minute="*/1", second=18, timezone=TZ),
         id="prestashop.carts_stale",
         **common,
+    )
+
+    # ---------- Tools ----------
+
+    # Patife
+    sched.add_job(
+        pt_healthz_run,
+        CronTrigger(minute="*/1", second=20, timezone=TZ),
+        id="patife.healthz",
+        **common
     )

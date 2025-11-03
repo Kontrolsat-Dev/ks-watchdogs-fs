@@ -90,6 +90,7 @@ class Settings(BaseSettings):
     TOOLS_PDA_BASE_END: str = "https://www.domain.com/__fastLogixApi/reports/api"
     TOOLS_PDA_GET_REPORTS: str ="https://www.domain.com/__fastLogixApi/reports/api/getReports.php"
     TOOLS_PDA_UPDATE_REPORT: str ="https://www.domain.com/__fastLogixApi/reports/api/updateReport.php"
-
+    # --- PATIFE ---
+    PATIFE_HEALTHZ:str = "https://domain.com/api/healthz"
 
 settings = Settings()
