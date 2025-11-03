@@ -36,7 +36,7 @@ def run(db_session_factory) -> bool:
         client = PatifeClient()
         payload = client.healthz()  # dict vindo do /api/readyz
 
-        # 2) Mapear p/ domínio
+        # 2) Mapear domínio
         d = raw_to_domain(payload)
 
         # 3) Construir ORM row
