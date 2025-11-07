@@ -1,51 +1,68 @@
 from __future__ import annotations
 from datetime import datetime, timedelta
-from typing import Dict, Any, List
 from zoneinfo import ZoneInfo
+import re
 from sqlalchemy.orm import Session
+
 from app.core.config import settings
 from app.repos.prestashop.pagespeed_read import PageSpeedReadRepo
 
-TZ = ZoneInfo(getattr(settings, "TIMEZONE", "Europe/Lisbon"))
+TZ = ZoneInfo(settings.TIMEZONE)
+_WIN_RE = re.compile(r"^\s*(\d+)\s*([smhdw])\s*$")
 
-def _since(window: str) -> datetime:
-    now = datetime.now(TZ)
-    w = (window or "7d").lower().strip()
-    if w.endswith("d"):
-        return now - timedelta(days=int(w[:-1] or "1"))
-    if w.endswith("h"):
-        return now - timedelta(hours=int(w[:-1] or "1"))
-    if w.endswith("m"):
-        return now - timedelta(minutes=int(w[:-1] or "1"))
-    return now - timedelta(days=7)
+def _parse_window(window: str) -> timedelta:
+    m = _WIN_RE.match(window or "")
+    if not m:
+        return timedelta(hours=24)
+    n = int(m.group(1))
+    unit = m.group(2).lower()
+    seconds = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}[unit]
+    return timedelta(seconds=n * seconds)
 
-def _percentile(values: List[int], p: float) -> int:
-    if not values:
+def _pct(values: list[int], p: float) -> int:
+    vals = [int(v) for v in values if v is not None]
+    if not vals:
         return 0
-    vals = sorted(values)
-    k = (len(vals) - 1) * p
-    f = int(k)
-    c = min(f + 1, len(vals) - 1)
-    if f == c:
-        return int(vals[int(k)])
-    d0 = vals[f] * (c - k)
-    d1 = vals[c] * (k - f)
-    return int(d0 + d1)
+    vals.sort()
+    idx = int(round(p * (len(vals) - 1)))
+    return vals[idx]
 
-def _summ(repo: PageSpeedReadRepo, since_dt, page_type: str) -> Dict[str, Any]:
-    ttfb = repo.ttfb_since(page_type, since_dt)
-    last = repo.last_status(page_type) or "ok"
-    return {
-        "p50_ttfb_ms": _percentile(ttfb, 0.50),
-        "p90_ttfb_ms": _percentile(ttfb, 0.90),
-        "p95_ttfb_ms": _percentile(ttfb, 0.95),
-        "last_status": "ok" if last != "error" else "error",
+def _downsample_even(series: list[dict], max_points: int) -> list[dict]:
+    n = len(series)
+    if max_points <= 0 or n <= max_points:
+        return series
+    step = (n - 1) / (max_points - 1)
+    idxs = sorted({int(round(i * step)) for i in range(max_points)})
+    return [series[i] for i in idxs]
+
+def get_pagespeed_summary(db: Session, window: str, max_points: int = 120) -> dict:
+    repo = PageSpeedReadRepo(db)
+    now = datetime.now(TZ)
+    since = now - _parse_window(window)
+
+    # percentis por tipo de página
+    home_vals = repo.ttfb_since("home", since)
+    prod_vals = repo.ttfb_since("product", since)
+
+    home = {
+        "p50_ttfb_ms": _pct(home_vals, 0.50),
+        "p90_ttfb_ms": _pct(home_vals, 0.90),
+        "p95_ttfb_ms": _pct(home_vals, 0.95),
+        "last_status": repo.last_status("home") or "ok",
+    }
+    product = {
+        "p50_ttfb_ms": _pct(prod_vals, 0.50),
+        "p90_ttfb_ms": _pct(prod_vals, 0.90),
+        "p95_ttfb_ms": _pct(prod_vals, 0.95),
+        "last_status": repo.last_status("product") or "ok",
     }
 
-def get_pagespeed_summary(db: Session, window: str) -> Dict[str, Any]:
-    since_dt = _since(window)
-    repo = PageSpeedReadRepo(db)
-    home = _summ(repo, since_dt, "home")
-    product = _summ(repo, since_dt, "product")
-    series = repo.series_since(["home", "product"], since_dt)
-    return {"home": home, "product": product, "series": series}
+    # série unificada e limitada
+    raw_series = repo.series_since(["home", "product"], since)
+    series = _downsample_even(raw_series, max_points)
+
+    return {
+        "home": home,
+        "product": product,
+        "series": series,
+    }
