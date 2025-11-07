@@ -16,6 +16,7 @@ from app.api.v1.prestashop import router as prestashop_router
 from app.api.v1.tools import router as tools_router
 from app.api.v1.kpi import router as kpi_router
 from app.api.v1.runs import router as runs_router
+from app.api.v1.home import router as home_router
 
 setup_logging()
 
@@ -30,6 +31,8 @@ app.add_middleware(
     max_age=86400,
 )
 # Create database
+
+
 @app.on_event("startup")
 async def on_startup():
     models.Base.metadata.create_all(bind=engine)
@@ -42,3 +45,4 @@ app.include_router(tools_router, prefix="/api/v1")
 app.include_router(kpi_router, prefix="/api/v1")
 app.include_router(alerts_router, prefix="/api/v1")
 app.include_router(runs_router, prefix="/api/v1")
+app.include_router(home_router, prefix="/api/v1")

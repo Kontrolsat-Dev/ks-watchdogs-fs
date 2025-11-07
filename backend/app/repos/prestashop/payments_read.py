@@ -64,3 +64,27 @@ class PaymentsReadRepo:
                 "observed_at": observed_at,
             })
         return out
+
+    def latest_by_method_since(self, since_dt) -> list[dict]:
+        mx = (
+            select(PMS.method, func.max(PMS.observed_at).label("last_seen"))
+            .where(PMS.observed_at >= since_dt)
+            .group_by(PMS.method)
+            .subquery()
+        )
+        q = (
+            select(PMS.method, PMS.last_payment_at, PMS.observed_at)
+            .join(mx, (mx.c.method == PMS.method) & (mx.c.last_seen == PMS.observed_at))
+            .order_by(PMS.method.asc())
+        )
+        rows = self.db.execute(q).all()
+        out = []
+        for method, last_payment_at, observed_at in rows:
+            out.append(
+                {
+                    "method": method,
+                    "last_payment_at": last_payment_at,
+                    "observed_at": observed_at,
+                }
+            )
+        return out

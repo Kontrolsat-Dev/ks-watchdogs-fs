@@ -57,3 +57,30 @@ class OrdersReadRepo:
             })
         return out
 
+    def latest_counts_by_type(self) -> dict:
+        max_obs = select(func.max(DOS.observed_at)).scalar_subquery()
+        std_cnt = func.sum(case((DOS.dropshipping.is_(False), 1), else_=0)).label("std_cnt")
+        ds_cnt = func.sum(case((DOS.dropshipping.is_(True), 1), else_=0)).label("ds_cnt")
+        total = func.count().label("total")
+        q = (
+            select(std_cnt, ds_cnt, total)
+            .where(DOS.observed_at == max_obs)
+            .where(DOS.status.in_(["warning", "critical"]))
+        )
+        row = self.db.execute(q).one()
+        return {
+            "total": int(row.total or 0),
+            "std": int(row.std_cnt or 0),
+            "dropship": int(row.ds_cnt or 0),
+        }
+
+    def daily_series_since(self, since_dt) -> list[dict]:
+        day = func.date(DOS.observed_at)
+        q = (
+            select(day.label("d"), func.count(func.distinct(DOS.id_order)).label("cnt"))
+            .where(DOS.observed_at >= since_dt)
+            .group_by(day)
+            .order_by(day)
+        )
+        rows = self.db.execute(q).all()
+        return [{"ts": str(r.d), "total": int(r.cnt)} for r in rows]
