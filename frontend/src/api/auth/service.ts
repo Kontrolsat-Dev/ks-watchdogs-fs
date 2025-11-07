@@ -14,7 +14,7 @@ export class AuthService {
   }
 
   me() {
-    return this.http.get<Record<string, unknown>>(Endpoints.AUTH_ME);
+    return this.http.get<Record<string, unknown>>(Endpoints.AUTH_ME);c
   }
 }
 
