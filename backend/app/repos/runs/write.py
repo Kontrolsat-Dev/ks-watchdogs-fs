@@ -1,4 +1,3 @@
-# app/repos/shared/write.py
 from sqlalchemy.orm import Session
 from app.models.runs import CheckRun
 
@@ -7,9 +6,12 @@ class RunsWriteRepo:
         self.db = db
 
     def insert_run(self, check_name: str, status: str, duration_ms: int, payload_json: dict | None) -> int:
+        s = (status or "").lower().strip()
+        status_value = "ok" if s == "ok" else "error"
+
         row = CheckRun(
             check_name=check_name,
-            status=status,
+            status=status_value,
             duration_ms=duration_ms,
             payload_json=payload_json or {},
         )

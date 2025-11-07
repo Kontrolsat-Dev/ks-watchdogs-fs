@@ -51,13 +51,11 @@ def run(db_session_factory):
         for it in uniq:
             repo.insert_snapshot(it, observed_at=now_dt)
         db.commit()
-
         duration_ms = int((perf_counter() - t0) * 1000)
-        runs.insert_run(
-            CHECK_NAME, "ok", duration_ms,
-            {"count_raw": len(items), "count_unique": len(uniq)}
-        )
-        log.info("%s wrote %d snapshots", CHECK_NAME, len(items))
+        order = {"ok": 0, "warning": 1, "critical": 2}
+        worst = max((it.status.value for it in uniq), default="ok", key=lambda s: order[s])
+        runs.insert_run(CHECK_NAME, "ok", duration_ms,
+                        {"count_raw": len(items), "count_unique": len(uniq), "worst": worst})
         return True
 
     except Exception as e:

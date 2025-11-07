@@ -26,9 +26,10 @@ def run(db_session_factory):
         items = [raw_to_domain(r) for r in raw]
         now = datetime.now(ZoneInfo(settings.TIMEZONE))
         repo.insert_many(items, observed_at=now); db.commit()
-        dur = int((perf_counter()-t0)*1000)
-        worst = max((i.status.value for i in items), default="ok", key=lambda s: {"ok":0,"warning":1,"critical":2}[s])
-        runs.insert_run(CHECK_NAME, worst, dur, {"count": len(items)})
+        dur = int((perf_counter() - t0) * 1000)
+        order = {"ok": 0, "warning": 1, "critical": 2}
+        worst = max((i.status.value for i in items), default="ok", key=lambda s: order[s])
+        runs.insert_run(CHECK_NAME, "ok", dur, {"count": len(items), "worst": worst})
         log.info("%s wrote %d snapshots", CHECK_NAME, len(items))
         return True
     except Exception as e:

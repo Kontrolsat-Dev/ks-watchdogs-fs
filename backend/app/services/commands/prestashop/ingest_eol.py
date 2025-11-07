@@ -37,9 +37,10 @@ def run(db_session_factory):
         items = list(by_id.values())
         n = repo.insert_many(items, observed_at=now_dt)
         db.commit()
-
-        runs.insert_run(CHECK_NAME, "ok", int((perf_counter()-t0)*1000), {"count_raw": len(rows), "count_unique": n})
-        log.info("%s wrote %d snapshots", CHECK_NAME, len(items))
+        order = {"ok": 0, "warning": 1, "critical": 2}
+        worst = max((it.status.value for it in items), default="ok", key=lambda s: order[s])
+        runs.insert_run(CHECK_NAME, "ok", int((perf_counter() - t0) * 1000),
+                        {"count_raw": len(rows), "count_unique": n, "worst": worst})
         return True
     except Exception as e:
         db.rollback()
