@@ -1,11 +1,11 @@
-from typing import Literal, Any, Dict, List
+from typing import Any, Dict, List
 from enum import Enum
 from pydantic import BaseModel, Field
 
 class CheckStatus(str, Enum):
     ok = "ok"
     error = "error"
-    critical = "error"
+    critical = "critical"
     warning = "warning"
 
 class CheckRunDTO(BaseModel):
