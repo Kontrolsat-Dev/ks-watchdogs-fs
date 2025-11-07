@@ -35,7 +35,7 @@ def get_payments_summary(db: Session, window: str) -> dict:
     # usa since se precisares para séries; aqui apenas último por método
     _since = now - _parse_window(window)
 
-    rows = repo.latest_per_method()  # tem de devolver pelo menos: method, last_payment_at
+    rows = repo.latest_by_method()  # tem de devolver pelo menos: method, last_payment_at
     out = {"last_per_method": []}
 
     for r in rows:
