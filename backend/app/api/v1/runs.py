@@ -7,7 +7,7 @@ from app.core.db import get_db
 from app.services.queries.runs.runs import RunsQueryService
 from app.schemas.runs import RunsListDTO
 
-router = APIRouter()
+router = APIRouter(prefix="/runs", tags=["runs"])
 
 class RunsStatusFilter(str, Enum):
     all = "all"
