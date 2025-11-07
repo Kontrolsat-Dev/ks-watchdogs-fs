@@ -1,49 +1,58 @@
+# app/services/queries/payments/summary.py
 from __future__ import annotations
-from datetime import datetime, timedelta
-from typing import Dict, Any, List
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+import re
 from sqlalchemy.orm import Session
+
 from app.core.config import settings
-from app.repos.prestashop.payments_read import PaymentsReadRepo
+from app.repos.prestashop.payments_read import PaymentsReadRepo  # garante que existe
+# Se o nome do repo for diferente, ajusta a import e a chamada abaixo.
 
-TZ = ZoneInfo(getattr(settings, "TIMEZONE", "Europe/Lisbon"))
+TZ = ZoneInfo(settings.TIMEZONE)
 
-def _since(window: str) -> datetime:
-    now = datetime.now(TZ)
-    w = (window or "24h").lower().strip()
-    if w.endswith("d"):
-        return now - timedelta(days=int(w[:-1] or "1"))
-    if w.endswith("h"):
-        return now - timedelta(hours=int(w[:-1] or "1"))
-    if w.endswith("m"):
-        return now - timedelta(minutes=int(w[:-1] or "1"))
-    return now - timedelta(hours=24)
+_WIN_RE = re.compile(r"^\s*(\d+)\s*([smhdw])\s*$")
 
-def get_payments_summary(db: Session, window: str) -> Dict[str, Any]:
-    since_dt = _since(window)
+def _parse_window(window: str) -> timedelta:
+    m = _WIN_RE.match(window or "")
+    if not m:
+        return timedelta(hours=24)
+    n = int(m.group(1))
+    unit = m.group(2)
+    mult = {"s":1, "m":60, "h":3600, "d":86400, "w":604800}[unit]
+    return timedelta(seconds=n * mult)
+
+def _ensure_aware(dt: datetime | None, tz: ZoneInfo) -> datetime | None:
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=tz)  # assume que o naive está em TZ local; se guardas em UTC, troca por timezone.utc
+    return dt.astimezone(tz)
+
+def get_payments_summary(db: Session, window: str) -> dict:
     repo = PaymentsReadRepo(db)
-    warn_h = getattr(settings, "PS_PAYMENTS_WARNING_HOURS", 2)
-    crit_h = getattr(settings, "PS_PAYMENTS_CRITICAL_HOURS", 6)
-
-    rows = repo.latest_by_method_since(since_dt)
     now = datetime.now(TZ)
-    last_per_method = []
+    # usa since se precisares para séries; aqui apenas último por método
+    _since = now - _parse_window(window)
+
+    rows = repo.latest_per_method()  # tem de devolver pelo menos: method, last_payment_at
+    out = {"last_per_method": []}
+
     for r in rows:
-        lp = r["last_payment_at"]
-        if lp is None:
-            hours_since = None
-            last_iso = None
-        else:
-            lp_dt = lp if isinstance(lp, datetime) else datetime.fromisoformat(str(lp))
-            hours_since = round((now - lp_dt).total_seconds() / 3600.0, 2)
-            last_iso = lp_dt.isoformat()
-        last_per_method.append(
-            {
-                "method": r["method"],
-                "last_payment_at": last_iso,
-                "hours_since": hours_since,
-                "warn_hours": warn_h,
-                "crit_hours": crit_h,
-            }
-        )
-    return {"last_per_method": last_per_method}
+        lp = _ensure_aware(r.get("last_payment_at"), TZ)
+        last_iso = lp.isoformat() if lp else None
+        age_minutes = None
+        if lp is not None:
+            # ambas aware -> ok
+            delta = now - lp
+            # proteção se lp > now (clocks off): clamp a zero
+            total_sec = max(0, int(delta.total_seconds()))
+            age_minutes = total_sec // 60
+
+        out["last_per_method"].append({
+            "method": r.get("method"),
+            "last_payment_at": last_iso,
+            "age_minutes": age_minutes,
+        })
+
+    return out
