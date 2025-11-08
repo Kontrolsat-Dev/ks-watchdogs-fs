@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
+import time
+import logging
 
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.schemas.home import HomeSummaryOut, CheckCardOut
 from app.services.queries.runs.runs import RunsQueryService
 from app.services.queries.payments.summary import get_payments_summary
@@ -13,14 +16,13 @@ from app.services.queries.pagespeed.summary import get_pagespeed_summary
 from app.services.queries.carts.summary import get_carts_summary
 from app.services.queries.eol.summary import get_eol_summary
 
-# teto de pontos por janela (para séries de PageSpeed)
 WINDOW_MAX_POINTS: Dict[str, int] = {
-    "6h": 180,   # ~1 ponto / 2 min
-    "12h": 240,  # ~1 ponto / 3 min
-    "24h": 288,  # ~1 ponto / 5 min
-    "3d": 336,   # ~1 ponto / 12–15 min
-    "7d": 336,   # idem, UI mais leve
+    "6h": 180, "12h": 240, "24h": 288, "3d": 336, "7d": 336,
 }
+
+log = logging.getLogger("watchdogs.home")
+_CACHE: Dict[Tuple[str, str], Tuple[float, HomeSummaryOut]] = {}
+_TTL = getattr(settings, "HOME_SUMMARY_TTL_SECONDS", 30)  # default 30s
 
 def _parse_sections(sections: Optional[str]) -> set[str]:
     if not sections:
@@ -29,10 +31,8 @@ def _parse_sections(sections: Optional[str]) -> set[str]:
 
 def _coerce_run_status(s: Optional[str]) -> str:
     s = (s or "").lower().strip()
-    if s in {"ok", "error"}:
-        return s
-    if s in {"warning", "critical"}:
-        return "ok"
+    if s in {"ok", "error"}: return s
+    if s in {"warning", "critical"}: return "ok"
     return "error"
 
 def _as_iso_utc(dt) -> str:
@@ -62,21 +62,26 @@ class HomeSummaryService:
 
     def build(self, *, window: str, sections: Optional[str]) -> HomeSummaryOut:
         want = _parse_sections(sections)
+        key = (window or "24h", ",".join(sorted(want)))
+
+        # cache hit?
+        now_ts = time.time()
+        hit = _CACHE.get(key)
+        if hit and (now_ts - hit[0] < _TTL):
+            return hit[1]
+
+        t0 = time.perf_counter()
         now_iso = datetime.now(timezone.utc).isoformat()
-
-        out = HomeSummaryOut(
-            now_iso=now_iso,
-            last_update_iso=now_iso,
-        )
-
+        out = HomeSummaryOut(now_iso=now_iso, last_update_iso=now_iso)
         errors: Dict[str, Optional[str]] = {}
 
         # -------- Runs / Checks --------
+        t_runs = None
         if "runs" in want:
+            t1 = time.perf_counter()
             try:
                 runs_svc = RunsQueryService(self.db)
-                latest = runs_svc.list(limit=500)  # leve o suficiente
-
+                latest = runs_svc.list(limit=500)
                 by_check: Dict[str, CheckCardOut] = {}
                 for r in latest:
                     name = getattr(r, "check_name", None)
@@ -88,51 +93,46 @@ class HomeSummaryService:
                         last_run_ms=int(getattr(r, "duration_ms", 0) or 0),
                         last_run_at=_as_iso_utc(getattr(r, "created_at", None)),
                     )
-
                 out.checks = sorted(by_check.values(), key=lambda x: x.name.lower())
                 errors["runs"] = None
             except Exception as e:
                 errors["runs"] = str(e)[:200]
+            finally:
+                t_runs = (time.perf_counter() - t1) * 1000
 
         # -------- KPIs --------
         if "kpis" in want:
             if out.kpis is None:
                 out.kpis = {}
 
-            # payments
-            try:
-                out.kpis["payments"] = get_payments_summary(self.db, window)
-            except Exception as e:
-                errors["payments"] = str(e)[:200]
+            def _safe(label, fn):
+                t_start = time.perf_counter()
+                try:
+                    out.kpis[label] = fn()
+                    errors[label] = None
+                except Exception as e:
+                    errors[label] = str(e)[:200]
+                return (time.perf_counter() - t_start) * 1000
 
-            # orders_delayed
-            try:
-                out.kpis["orders_delayed"] = get_orders_summary(self.db, window)
-            except Exception as e:
-                errors["orders_delayed"] = str(e)[:200]
+            # closures p/ medir tempo
+            bp = _pick_bucket_minutes(window)
+            mp = WINDOW_MAX_POINTS.get(window, 240)
 
-            # pagespeed (bucket + cap de pontos)
-            try:
-                out.kpis["pagespeed"] = get_pagespeed_summary(
-                    self.db,
-                    window,
-                    bucket_minutes=_pick_bucket_minutes(window),
-                    max_points=WINDOW_MAX_POINTS.get(window, 240),
-                )
-            except Exception as e:
-                errors["pagespeed"] = str(e)[:200]
+            t_pay = _safe("payments", lambda: get_payments_summary(self.db, window))
+            t_ord = _safe("orders_delayed", lambda: get_orders_summary(self.db, window))
+            t_ps  = _safe("pagespeed", lambda: get_pagespeed_summary(self.db, window, bucket_minutes=bp, max_points=mp))
+            t_cart= _safe("carts_stale", lambda: get_carts_summary(self.db, window))
+            t_eol = _safe("eol", lambda: get_eol_summary(self.db, window))
 
-            # carts_stale
-            try:
-                out.kpis["carts_stale"] = get_carts_summary(self.db, window)
-            except Exception as e:
-                errors["carts_stale"] = str(e)[:200]
-
-            # eol
-            try:
-                out.kpis["eol"] = get_eol_summary(self.db, window)
-            except Exception as e:
-                errors["eol"] = str(e)[:200]
+            # logging sintético (não altera resposta)
+            log.info("home.summary window=%s timings_ms runs=%s payments=%.1f orders=%.1f pagespeed=%.1f carts=%.1f eol=%.1f total=%.1f",
+                     window,
+                     f"{t_runs:.1f}" if t_runs is not None else "-",
+                     t_pay, t_ord, t_ps, t_cart, t_eol,
+                     (time.perf_counter() - t0) * 1000)
 
         out.errors = errors
+
+        # guarda no cache
+        _CACHE[key] = (time.time(), out)
         return out
