@@ -30,6 +30,29 @@ def _parse_sections(sections: Optional[str]) -> set[str]:
         return {"runs", "kpis"}
     return {s.strip() for s in sections.split(",") if s.strip()}
 
+def as_iso_utc(
+    dt: datetime | str | None,
+    *,
+    assume_naive_tz: ZoneInfo = timezone.utc,  # usa ZoneInfo("Europe/Lisbon") se guardas locais
+) -> str:
+    """
+    Devolve sempre ISO UTC. Se dt for:
+      - None -> now UTC
+      - str  -> tenta fromisoformat (aceita 'Z'), fallback básico
+      - naive -> assume assume_naive_tz e converte para UTC
+      - aware -> converte para UTC
+    """
+    if dt is None:
+        return datetime.now(timezone.utc).isoformat()
+
+    if isinstance(dt, str):
+        dt = _parse_iso_dt(dt)
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=assume_naive_tz)
+
+    return dt.astimezone(timezone.utc).isoformat()
+
 def _coerce_run_status(s: Optional[str]) -> str:
     s = (s or "").lower().strip()
     if s in {"ok", "error"}: return s
@@ -123,7 +146,7 @@ class HomeSummaryService:
                         name=name,
                         last_status=_coerce_run_status(getattr(r, "status", None)),
                         last_run_ms=int(getattr(r, "duration_ms", 0) or 0),
-                        last_run_at=_as_iso_utc(getattr(r, "created_at", None)),
+                        last_run_at=as_iso_utc(getattr(r, "created_at", None)),
                     )
                 out.checks = sorted(by_check.values(), key=lambda x: x.name.lower())
                 errors["runs"] = None
