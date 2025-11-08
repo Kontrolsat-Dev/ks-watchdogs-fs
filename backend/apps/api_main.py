@@ -9,7 +9,7 @@ from app.core.logging import setup_logging
 from app.core.middleware import RequestContextMiddleware
 from app.core.db import engine
 from app import models
-from app.core.bootstrap import bootstrap_database, ensure_sqlite_indexes
+from app.core.bootstrap import bootstrap_database
 # Routers
 from app.api.v1.auth import router as auth_router
 from app.api.v1.health import router as health_router
