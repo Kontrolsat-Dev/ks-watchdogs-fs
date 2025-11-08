@@ -10,10 +10,7 @@ from app.core.config import settings
 def login_user(req: LoginRequest) -> LoginDTO:
     client = PrestashopClient()
     try:
-        if settings.APP_ENV == 'dev':
-            user = client.login("it@kontrolsat.com", "#Kontrolsat792")
-        else:
-            user = client.login(req.email, req.password)
+        user = client.login(req.email, req.password)
     except:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Dados inválidos")
 
