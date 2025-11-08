@@ -16,7 +16,7 @@ export default function TinyStat({
       </CardHeader>
       <CardContent className="flex items-center gap-2">
         {Icon ? <Icon className="h-5 w-5 text-muted-foreground" /> : null}
-        <div className="text-lg font-semibold">321{value}</div>
+        <div className="text-lg font-semibold">{value}</div>
       </CardContent>
     </Card>
   );
