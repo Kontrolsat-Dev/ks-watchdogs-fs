@@ -33,8 +33,8 @@ export default function PagespeedCard({ kpi }: { kpi?: PagespeedKpi }) {
           description="Home e produto"
         />
       </CardHeader>
-      <CardContent className="grid gap-3 md:grid-cols-3">
-        <div className="grid gap-3">
+      <CardContent className=" gap-3 md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 mb-5">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm">Home</CardTitle>
@@ -46,7 +46,6 @@ export default function PagespeedCard({ kpi }: { kpi?: PagespeedKpi }) {
               <TinyStat
                 label="p50"
                 value={kpi ? `${kpi.home.p50_ttfb_ms} ms` : "—"}
-                icon={Zap}
               />
               <TinyStat
                 label="p90"
