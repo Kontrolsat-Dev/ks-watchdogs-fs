@@ -17,6 +17,10 @@ export const Endpoints = Object.freeze({
   HEALTHZ: import.meta.env.VITE_API_HEALTH_URL || "/healthz",
   RUNS: import.meta.env.VITE_API_RUNS || "/runs",
   // --------------------------------
+  // -------- HOME Endpoints -------
+  // --------------------------------
+  HOME_SUMMARY: import.meta.env.VITE_API_HOME_SUMMARY || "/home/summary",
+  // --------------------------------
   // ------- System Endpoints -------
   // --------------------------------
   AUTH_LOGIN: import.meta.env.VITE_API_AUTH_LOGIN || "/auth/login",
