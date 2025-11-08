@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Dict, Optional, Tuple
+from zoneinfo import ZoneInfo
 import time
 import logging
 
@@ -35,12 +36,43 @@ def _coerce_run_status(s: Optional[str]) -> str:
     if s in {"warning", "critical"}: return "ok"
     return "error"
 
-def _as_iso_utc(dt) -> str:
+def _parse_iso_dt(s: str) -> datetime:
+    s = s.strip()
+    # lida com sufixo 'Z'
+    if s.endswith("Z"):
+        s = s[:-1] + "+00:00"
+    try:
+        return datetime.fromisoformat(s)
+    except ValueError:
+        # fallback simples para "YYYY-MM-DD HH:MM:SS"
+        try:
+            return datetime.strptime(s, "%Y-%m-%d %H:%M:%S")
+        except Exception:
+            raise
+
+def as_iso_utc(
+    dt: datetime | str | None,
+    *,
+    assume_naive_tz: ZoneInfo = timezone.utc,  # usa ZoneInfo("Europe/Lisbon") se guardas locais
+) -> str:
+    """
+    Devolve sempre ISO UTC. Se dt for:
+      - None -> now UTC
+      - str  -> tenta fromisoformat (aceita 'Z'), fallback básico
+      - naive -> assume assume_naive_tz e converte para UTC
+      - aware -> converte para UTC
+    """
     if dt is None:
         return datetime.now(timezone.utc).isoformat()
-    if getattr(dt, "tzinfo", None) is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+
+    if isinstance(dt, str):
+        dt = _parse_iso_dt(dt)
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=assume_naive_tz)
+
     return dt.astimezone(timezone.utc).isoformat()
+
 
 def _pick_bucket_minutes(window: str) -> int:
     w = (window or "").lower()
