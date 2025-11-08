@@ -43,17 +43,17 @@ const NAV_ITEMS: NavGroup[] = [
     icon: ToolCase,
     items: [
       { to: "/pda", label: "PDA" },
-      { to: "#", label: "Patife" },
-      { to: "#", label: "Policia" },
-      { to: "#", label: "Gestor de Campanhas" },
+      { to: "/patife", label: "Patife" },
+      { to: "/policia", label: "Policia" },
+      { to: "/gc", label: "Gestor de Campanhas" },
     ],
   },
   {
     name: "Serviços",
     icon: Globe,
     items: [
-      { to: "#", label: "Bulkgate" },
-      { to: "#", label: "Mailchimp" },
+      { to: "/bulkgate", label: "Bulkgate" },
+      { to: "/mailchimp", label: "Mailchimp" },
     ],
   },
   {
@@ -68,10 +68,10 @@ const NAV_ITEMS: NavGroup[] = [
     name: "Transportadoras",
     icon: Truck,
     items: [
-      { to: "#", label: "Nacex" },
-      { to: "#", label: "CTT" },
-      { to: "#", label: "DPD" },
-      { to: "#", label: "TTM" },
+      { to: "/carriers/nacex", label: "Nacex" },
+      { to: "/carriers/ctt", label: "CTT" },
+      { to: "/carriers/dpd", label: "DPD" },
+      { to: "/carriers/ttm", label: "TTM" },
     ],
   },
   {
