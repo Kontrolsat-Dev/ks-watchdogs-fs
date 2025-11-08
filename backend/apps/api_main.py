@@ -9,7 +9,7 @@ from app.core.logging import setup_logging
 from app.core.middleware import RequestContextMiddleware
 from app.core.db import engine
 from app import models
-from app.core.bootstrap import ensure_sqlite_indexes
+from app.core.bootstrap import bootstrap_database, ensure_sqlite_indexes
 # Routers
 from app.api.v1.auth import router as auth_router
 from app.api.v1.health import router as health_router
@@ -20,19 +20,20 @@ from app.api.v1.kpi import router as kpi_router
 from app.api.v1.runs import router as runs_router
 from app.api.v1.home import router as home_router
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # cria índices idempotentes em SQLite
-    try:
-        ensure_sqlite_indexes(engine)
-    except Exception as e:
-        # não falhar o arranque por causa disto
-        import logging; logging.getLogger(__name__).warning("ensure_sqlite_indexes: %s", e)
-    yield
 
 setup_logging()
 
 app = FastAPI(title="Watchdogs API", version="0.1.0")
+
+@app.on_event("startup")
+def _startup():
+    try:
+        bootstrap_database(engine)
+    except Exception as e:
+        # não falha o arranque por isto
+        print(f"[bootstrap] warn: {e}")
+
+
 app.add_middleware(RequestContextMiddleware)
 app.add_middleware(
     CORSMiddleware,

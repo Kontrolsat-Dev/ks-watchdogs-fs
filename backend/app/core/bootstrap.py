@@ -1,31 +1,48 @@
 from __future__ import annotations
-from sqlalchemy import text
+
+from contextlib import contextmanager
 from sqlalchemy.engine import Engine
+from sqlalchemy import text
+
 from app.models.prestashop import PageSpeedSnapshot as PSS
 
-def ensure_sqlite_indexes(engine: Engine) -> None:
-    """
-    Cria índices úteis para PageSpeedSnapshot em SQLite (no-ops se já existirem).
-    Chama isto no startup da app.
-    """
-    if engine.dialect.name != "sqlite":
-        return
-
-    table = PSS.__table__
-    tname = table.name  # nome real da tabela
-    col_page = PSS.page_type.key
-    col_obs = PSS.observed_at.key
-    col_ttfb = PSS.ttfb_ms.key
-
-    stmts = [
-        # filtros por (page_type, observed_at)
-        f"CREATE INDEX IF NOT EXISTS ix_{tname}_page_obs ON {tname} ({col_page}, {col_obs});",
-        # scans por observed_at
-        f"CREATE INDEX IF NOT EXISTS ix_{tname}_obs ON {tname} ({col_obs});",
-        # percentis/ordenação por ttfb por página
-        f"CREATE INDEX IF NOT EXISTS ix_{tname}_page_ttfb ON {tname} ({col_page}, {col_ttfb});",
-    ]
-
+@contextmanager
+def _begin(engine: Engine):
     with engine.begin() as conn:
-        for s in stmts:
-            conn.execute(text(s))
+        yield conn
+
+def init_sqlite_pragmas(engine: Engine) -> None:
+    """PRAGMAs seguros para API com leitura intensiva."""
+    with _begin(engine) as conn:
+        conn.execute(text("PRAGMA journal_mode=WAL;"))
+        conn.execute(text("PRAGMA synchronous=NORMAL;"))
+        conn.execute(text("PRAGMA temp_store=MEMORY;"))
+        # ~64MB de cache (negativo = KB * -1 em SQLite)
+        conn.execute(text("PRAGMA cache_size=-65536;"))
+
+def ensure_indexes(engine: Engine) -> None:
+    """Cria índices idempotentes. Foca PSS (PageSpeed)."""
+    tbl = getattr(PSS, "__tablename__", "prestashop_pagespeed_snapshots")
+    with _begin(engine) as conn:
+        # índice composto por (page_type, observed_at)
+        conn.execute(text(f"""
+            CREATE INDEX IF NOT EXISTS ix_{tbl}_ptype_obs
+            ON {tbl} (page_type, observed_at);
+        """))
+        # por observed_at (para filtros por janela)
+        conn.execute(text(f"""
+            CREATE INDEX IF NOT EXISTS ix_{tbl}_obs
+            ON {tbl} (observed_at);
+        """))
+        # por page_type (para last_status rápido)
+        conn.execute(text(f"""
+            CREATE INDEX IF NOT EXISTS ix_{tbl}_ptype
+            ON {tbl} (page_type);
+        """))
+
+def bootstrap_database(engine: Engine) -> None:
+    """Invocado no arranque da app."""
+    # só aplica PRAGMAs na SQLite
+    if engine.dialect.name == "sqlite":
+        init_sqlite_pragmas(engine)
+        ensure_indexes(engine)

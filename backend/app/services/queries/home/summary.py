@@ -64,7 +64,6 @@ class HomeSummaryService:
         want = _parse_sections(sections)
         now_iso = datetime.now(timezone.utc).isoformat()
 
-        # Garante defaults (checks=[], kpis={}, errors={})
         out = HomeSummaryOut(
             now_iso=now_iso,
             last_update_iso=now_iso,
@@ -76,8 +75,7 @@ class HomeSummaryService:
         if "runs" in want:
             try:
                 runs_svc = RunsQueryService(self.db)
-                # reduz um pouco o limite para tornar a primeira dobra mais leve
-                latest = runs_svc.list(limit=500)
+                latest = runs_svc.list(limit=500)  # leve o suficiente
 
                 by_check: Dict[str, CheckCardOut] = {}
                 for r in latest:
@@ -91,7 +89,6 @@ class HomeSummaryService:
                         last_run_at=_as_iso_utc(getattr(r, "created_at", None)),
                     )
 
-                # Ordena por nome para UI consistente
                 out.checks = sorted(by_check.values(), key=lambda x: x.name.lower())
                 errors["runs"] = None
             except Exception as e:
@@ -99,7 +96,6 @@ class HomeSummaryService:
 
         # -------- KPIs --------
         if "kpis" in want:
-            # garante dict existente
             if out.kpis is None:
                 out.kpis = {}
 
@@ -115,7 +111,7 @@ class HomeSummaryService:
             except Exception as e:
                 errors["orders_delayed"] = str(e)[:200]
 
-            # pagespeed (com hints de performance)
+            # pagespeed (bucket + cap de pontos)
             try:
                 out.kpis["pagespeed"] = get_pagespeed_summary(
                     self.db,
