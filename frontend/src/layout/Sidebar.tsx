@@ -62,6 +62,7 @@ const NAV_ITEMS: NavGroup[] = [
     items: [
       { to: "/kpi/orders/performance", label: "Perfomance Encomendas" },
       { to: "/kpi/orders/timeseries", label: "Timeseries Encomendas" },
+      { to: "/kpi/store/performance", label: "Performance Loja  " },
     ],
   },
   {

@@ -27,6 +27,7 @@ import RequireAuth from "./layout/PublicLayout";
 import PdaPage from "./features/pda";
 // --- Patife
 import PatifeHealthzPage from "./features/patife";
+import KpiStoreFrontMetricsPage from "./features/kpi/orders/store";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +84,10 @@ export default function App() {
                 <Route
                   path="/kpi/orders/timeseries"
                   element={<KpiOrdersTimeseriesPage />}
+                />
+                <Route
+                  path="/kpi/store/performance"
+                  element={<KpiStoreFrontMetricsPage />}
                 />
                 {/* System */}
                 <Route path="/system/runs" element={<SystemRunsPage />} />

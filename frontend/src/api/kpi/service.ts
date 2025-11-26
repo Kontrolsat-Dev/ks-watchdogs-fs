@@ -8,6 +8,7 @@ import type {
   OrderDir,
   EmployeeTimeseriesResponse,
   EmployeePerformanceResponse,
+  StoreFrontMetricsResponse,
 } from "./types";
 import { http as defaultHttp } from "@/lib/http";
 
@@ -48,6 +49,15 @@ export class KpiService {
       {
         params: { role, since, until, order_by, order_dir, limit },
       }
+    );
+  }
+
+  getStoreFrontMetrics(params: {
+    since: string; // DD-MM-YYYY
+  }) {
+    return this.http.get<StoreFrontMetricsResponse>(
+      Endpoints.KPI_STORE_FRONT_METRICS,
+      { params }
     );
   }
 }

@@ -52,4 +52,7 @@ export const Endpoints = Object.freeze({
   KPI_EMPLOYEE_ORDERS_PROCESSING_PERFORMANCE:
     import.meta.env.VITE_KPI_EMPLOYEE_ORDERS_PROCESSING_PERFORMANCE ||
     "/kpi/employees/performance",
+  KPI_STORE_FRONT_METRICS:
+    import.meta.env.VITE_KPI_STORE_FRONT_METRICS ||
+    "/kpi/reports/employees/store-metrics",
 });
