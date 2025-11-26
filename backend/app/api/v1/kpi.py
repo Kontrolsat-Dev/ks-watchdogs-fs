@@ -3,11 +3,16 @@ from typing import Literal, Optional
 
 from app.core.deps import require_access_token
 from app.services.read.kpi.kpi_query import KPIQueryService
-from app.schemas.kpi import EmployeeTimeseriesDTO, EmployeePerformanceDTO
+from app.schemas.kpi import (
+    EmployeeTimeseriesDTO,
+    EmployeePerformanceDTO,
+    InStorePurchasesDTO,
+)
 from app.services.commands.kpi.report_generate import KPIReportGenerateService
 from app.core.config import settings
 
 router = APIRouter(prefix="/kpi", tags=["kpi"])
+
 
 @router.get("/employees/timeseries", response_model=EmployeeTimeseriesDTO)
 def employees_timeseries(
@@ -15,7 +20,7 @@ def employees_timeseries(
     gran: Literal["day", "week", "month", "year"] = Query("day"),
     since: Optional[str] = None,
     until: Optional[str] = None,
-    _=Depends(require_access_token)
+    _=Depends(require_access_token),
 ):
     svc = KPIQueryService()
     res = svc.employees_timeseries(role=role, gran=gran, since=since, until=until)
@@ -29,6 +34,7 @@ def employees_timeseries(
         "employees": res["series"],
     }
 
+
 @router.get("/employees/performance", response_model=EmployeePerformanceDTO)
 def employees_performance(
     role: Literal["prep", "invoice"] = Query(...),
@@ -37,7 +43,7 @@ def employees_performance(
     order_by: Literal["avg", "n", "min", "max"] = Query("avg"),
     order_dir: Literal["asc", "desc"] = Query("asc"),
     limit: int = Query(200, ge=1, le=5000),
-    _ = Depends(require_access_token)
+    _=Depends(require_access_token),
 ):
     svc = KPIQueryService()
     res = svc.employees_performance(
@@ -60,13 +66,14 @@ def employees_performance(
         "items": res["items"],
     }
 
+
 @router.post("/reports/generate")
 def generate_kpi_report(
     period: Literal["day", "week", "month", "year"] = Query("day"),
     since: Optional[str] = Query(None, description="YYYY-MM-DD (inclusive)"),
     until: Optional[str] = Query(None, description="YYYY-MM-DD (exclusive)"),
     force: bool = Query(False, description="Ignora cache e força novo report"),
-    _ = Depends(require_access_token)
+    _=Depends(require_access_token),
 ):
     if not settings.N8N_REPORT_WEBHOOK_URL:
         raise HTTPException(status_code=500, detail="N8N webhook URL não configurada")
@@ -77,7 +84,7 @@ def generate_kpi_report(
     # mapeamento 1:1 para a estrutura devolvida pelo service
     return {
         "ok": res["ok"],
-        "report_id": res["uid"],                    # antes: res["report_id"]
+        "report_id": res["uid"],  # antes: res["report_id"]
         "period": res["meta"]["period"],
         "since": res["meta"]["since"],
         "until": res["meta"]["until"],
@@ -89,4 +96,26 @@ def generate_kpi_report(
             "response": res["n8n"]["response"],
         },
         "preview_sizes": res["preview_sizes"],
+    }
+
+
+# In Store --------------------
+@router.get("/reports/employees/store-metrics", response_model=InStorePurchasesDTO)
+def instore_purchases(
+    since: Optional[str] = Query(
+        None,
+        description="Data mínima (YYYY-MM-DD ou ISO) para ir buscar audits ao frontInvoiceAudit",
+    ),
+    _=Depends(require_access_token),
+):
+    svc = KPIQueryService()
+    res = svc.instore_metrics(since=since)
+
+    return {
+        "ok": True,
+        "since": res["since"],
+        "count_events": res["count_events"],
+        "timeseries_daily": res["timeseries_daily"],
+        "employees": res["employees"],
+        "doc_type_daily": res["doc_type_daily"],
     }

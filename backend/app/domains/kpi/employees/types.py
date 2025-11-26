@@ -1,5 +1,8 @@
+# domains/kpi/employees/types.py
+
 from dataclasses import dataclass
 from typing import Optional
+
 
 @dataclass(slots=True)
 class EmployeePoint:
@@ -8,12 +11,14 @@ class EmployeePoint:
     avg_min: float | None
     avg_h: float | None
 
+
 @dataclass(slots=True)
 class EmployeeSeries:
     role: str
     employee_id: int
     employee_name: str
     points: list[EmployeePoint]
+
 
 @dataclass(slots=True)
 class EmployeePerformance:
