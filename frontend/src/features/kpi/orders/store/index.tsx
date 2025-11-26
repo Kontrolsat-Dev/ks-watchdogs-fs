@@ -381,7 +381,7 @@ export default function KpiStoreFrontMetricsPage() {
                     labelStyle={{ color: "var(--muted-foreground)" }}
                     itemStyle={{ color: "var(--foreground)" }}
                     cursor={{ fill: "var(--muted)", opacity: 0.1 }}
-                    formatter={(value: any, name: any) => {
+                    formatter={(value: any) => {
                       if (metric === "total_amount") {
                         return [`${Number(value).toFixed(2)} €`, "Faturação"];
                       }
