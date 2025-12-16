@@ -1,26 +1,23 @@
 import { useHealthz } from "@/features/system/healthz/queries.ts";
-import { StatusDot } from "@/components/feedback/StatusDot";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
-  Loader2,
   Moon,
-  RefreshCcw,
   Sun,
   Menu,
-  X,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeftClose,
+  PanelLeft,
   LogOut,
+  Circle,
 } from "lucide-react";
 import { useTheme } from "@/providers/theme-provider";
 import { useLogout } from "@/lib/auth-hooks";
 
 type Props = {
-  onToggleMobile: () => void; // abre/fecha gaveta no mobile
-  onToggleMini: () => void; // alterna mini/expandida no desktop
-  isSidebarOpen: boolean; // estado da gaveta no mobile
-  mini: boolean; // estado "mini" (largura) no desktop
+  onToggleMobile: () => void;
+  onToggleMini: () => void;
+  isSidebarOpen: boolean;
+  mini: boolean;
 };
 
 export default function Topbar({
@@ -29,7 +26,7 @@ export default function Topbar({
   isSidebarOpen,
   mini,
 }: Props) {
-  const { data, isFetching, refetch, isError } = useHealthz();
+  const { data, isFetching, isError } = useHealthz();
 
   const status = isError
     ? "critical"
@@ -44,123 +41,117 @@ export default function Topbar({
   const logout = useLogout();
 
   return (
-    <div className="sticky top-0 z-10 h-14 border-b bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40">
-      <div className="flex h-14 items-center justify-between px-4">
-        {/* Esquerda: botões + título */}
-        <div className="flex items-center gap-2">
-          {/* Mobile: abrir/fechar gaveta */}
+    <header
+      className={cn(
+        "sticky top-0 z-30 h-14",
+        "border-b border-border/40",
+        // Glassmorphism
+        "bg-background/60 backdrop-blur-xl backdrop-saturate-150",
+        "supports-[backdrop-filter]:bg-background/40"
+      )}
+    >
+      <div className="flex h-full items-center justify-between px-4">
+        {/* Left: Navigation controls */}
+        <div className="flex items-center gap-1">
+          {/* Mobile toggle */}
           <Button
-            variant="link"
+            variant="ghost"
             size="icon"
             onClick={onToggleMobile}
             aria-label={isSidebarOpen ? "Fechar navegação" : "Abrir navegação"}
-            className="md:hidden"
+            className="md:hidden h-8 w-8 hover:bg-accent/50"
           >
-            {isSidebarOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
+            <Menu className={cn("h-4 w-4", isSidebarOpen && "hidden")} />
+            <PanelLeftClose className={cn("h-4 w-4", !isSidebarOpen && "hidden")} />
           </Button>
 
-          {/* Desktop: mini/expandir sidebar (largura) */}
+          {/* Desktop sidebar toggle */}
           <Button
-            variant="link"
+            variant="ghost"
             size="icon"
             onClick={onToggleMini}
-            aria-label={
-              mini ? "Expandir barra lateral" : "Colapsar barra lateral"
-            }
-            className="hidden md:inline-flex"
+            aria-label={mini ? "Expandir sidebar" : "Colapsar sidebar"}
+            className="hidden md:flex h-8 w-8 hover:bg-accent/50"
           >
             {mini ? (
-              <ChevronRight className="h-5 w-5" />
+              <PanelLeft className="h-4 w-4" />
             ) : (
-              <ChevronLeft className="h-5 w-5" />
+              <PanelLeftClose className="h-4 w-4" />
             )}
           </Button>
 
-          <div className="ml-1 text-sm font-medium">Watchdogs</div>
-          <span className="text-xs text-muted-foreground">
-            Sistema de Monitorização de Ecommerce
-          </span>
+          {/* Separator */}
+          <div className="hidden md:block h-4 w-px bg-border/60 mx-2" />
+
+          {/* Breadcrumb / Title */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Watchdogs</span>
+            <span className="hidden sm:inline text-xs text-muted-foreground">
+              / Monitorização
+            </span>
+          </div>
         </div>
 
-        {/* Direita: estado + ações */}
-        <div className="flex items-center gap-4 mr-10">
+        {/* Right: Status & Actions */}
+        <div className="flex items-center gap-2">
+          {/* Status Pill */}
           <div
             className={cn(
-              "flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs",
-              status === "ok" && "border-emerald-200",
-              status !== "ok" && "border-amber-200"
+              "flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
+              "border transition-colors",
+              status === "ok" && "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+              status === "warning" && "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+              status === "critical" && "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
             )}
-            title={
-              isError
-                ? "Erro ao verificar saúde do backend"
-                : "Estado do backend"
-            }
           >
-            <StatusDot status={status || "warning"} />
+            <Circle
+              className={cn(
+                "h-1.5 w-1.5 fill-current",
+                isFetching && "animate-pulse"
+              )}
+            />
             <span className="hidden sm:inline">
-              {isError ? "Backend: erro" : `Backend: ${data?.status ?? "…"}`}
+              {isError ? "Offline" : data?.status ?? "..."}
             </span>
-            {data?.env && (
-              <span className="text-muted-foreground">· {data.env}</span>
-            )}
-            {typeof data?.db_ok === "boolean" && (
-              <span
-                className={cn(
-                  "ml-1",
-                  data.db_ok ? "text-emerald-600" : "text-red-600"
-                )}
-              >
-                DB {data.db_ok ? "ok" : "down"}
-              </span>
-            )}
             {latencyMs !== null && (
-              <span className="text-muted-foreground">· {latencyMs}ms</span>
-            )}
-            {isFetching && (
-              <Loader2 className="ml-1 h-3.5 w-3.5 animate-spin" />
+              <span className="text-[10px] opacity-70">{latencyMs}ms</span>
             )}
           </div>
 
-          {/* Refresh */}
+          {/* Separator */}
+          <div className="h-4 w-px bg-border/60 mx-1" />
+
+          {/* Theme Toggle */}
           <Button
-            variant="link"
-            size="sm"
-            onClick={() => refetch()}
-            aria-label="Atualizar estado"
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(isDark ? "light" : "dark")}
+            className="h-8 w-8 hover:bg-accent/50"
+            aria-label="Alternar tema"
           >
-            <RefreshCcw className="h-4 w-4" />
+            <Sun className={cn(
+              "h-4 w-4 transition-all",
+              isDark ? "rotate-0 scale-100" : "rotate-90 scale-0 absolute"
+            )} />
+            <Moon className={cn(
+              "h-4 w-4 transition-all",
+              isDark ? "-rotate-90 scale-0 absolute" : "rotate-0 scale-100"
+            )} />
           </Button>
 
-          {/* Toggle tema */}
-          <div
-            onClick={() => setTheme(isDark ? "light" : "dark")}
-            className={`flex items-center cursor-pointer transition-transform duration-500 ${
-              isDark ? "rotate-180" : "rotate-0"
-            }`}
-          >
-            {isDark ? (
-              <Sun className="h-6 w-6 text-yellow-500 rotate-0 transition-all" />
-            ) : (
-              <Moon className="h-6 w-6 text-blue-500 rotate-0 transition-all" />
-            )}
-            <span className="sr-only">Toggle theme</span>
-          </div>
+          {/* Logout */}
           <Button
-            className="cursor-pointer dark:hover:text-white hover:text-blue-500 transition-all duration-300"
-            size={"icon"}
             variant="ghost"
+            size="icon"
             onClick={logout}
             title="Terminar sessão"
             aria-label="Terminar sessão"
+            className="h-8 w-8 hover:bg-accent/50 hover:text-destructive"
           >
-            <LogOut className="h-6 w-6" />
+            <LogOut className="h-4 w-4" />
           </Button>
         </div>
       </div>
-    </div>
+    </header>
   );
 }

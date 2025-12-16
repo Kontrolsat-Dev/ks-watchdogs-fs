@@ -28,6 +28,8 @@ import PdaPage from "./features/pda";
 // --- Patife
 import PatifeHealthzPage from "./features/patife";
 import KpiStoreFrontMetricsPage from "./features/kpi/orders/store";
+// --- 404
+import NotFoundPage from "./features/pages/not-found";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -91,6 +93,9 @@ export default function App() {
                 />
                 {/* System */}
                 <Route path="/system/runs" element={<SystemRunsPage />} />
+                
+                {/* 404 - Catch all */}
+                <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Route>
           </Routes>

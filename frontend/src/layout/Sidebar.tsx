@@ -2,20 +2,19 @@ import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Store,
-  ChevronDown,
-  ToolCase,
+  ChevronRight,
+  Wrench,
   Truck,
-  ChartSpline,
+  BarChart3,
   Globe,
-  MonitorCog,
+  Settings,
   LayoutDashboard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 type Props = {
-  mini: boolean; // CONTROLA largura/visual (md:w-16 vs md:w-64)
-  mobileOpen: boolean; // gaveta em < md
+  mini: boolean;
+  mobileOpen: boolean;
   onCloseMobile: () => void;
 };
 
@@ -40,7 +39,7 @@ const NAV_ITEMS: NavGroup[] = [
   },
   {
     name: "Ferramentas",
-    icon: ToolCase,
+    icon: Wrench,
     items: [
       { to: "/pda", label: "PDA" },
       { to: "/patife", label: "Patife" },
@@ -58,11 +57,11 @@ const NAV_ITEMS: NavGroup[] = [
   },
   {
     name: "Métricas",
-    icon: ChartSpline,
+    icon: BarChart3,
     items: [
-      { to: "/kpi/orders/performance", label: "Perfomance Encomendas" },
+      { to: "/kpi/orders/performance", label: "Performance Encomendas" },
       { to: "/kpi/orders/timeseries", label: "Timeseries Encomendas" },
-      { to: "/kpi/store/performance", label: "Performance Loja  " },
+      { to: "/kpi/store/performance", label: "Performance Loja" },
     ],
   },
   {
@@ -77,8 +76,8 @@ const NAV_ITEMS: NavGroup[] = [
   },
   {
     name: "Sistema",
-    icon: MonitorCog,
-    items: [{ to: "/system/runs", label: "Logs de Analises" }],
+    icon: Settings,
+    items: [{ to: "/system/runs", label: "Logs de Análises" }],
   },
 ];
 
@@ -87,7 +86,6 @@ const GROUPS_KEY = "sidebar_groups_v1";
 export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
   const location = useLocation();
 
-  // default: todos fechados na primeira vez
   const allFalse = useMemo(
     () =>
       Object.fromEntries(NAV_ITEMS.map((g) => [g.name, false])) as Record<
@@ -110,15 +108,12 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
     }
   };
 
-  // estado de grupos abertos (INDEPENDENTE do 'mini')
   const [open, setOpen] = useState<Record<string, boolean>>(() => readSaved());
 
-  // persistência
   useEffect(() => {
     localStorage.setItem(GROUPS_KEY, JSON.stringify(open));
   }, [open]);
 
-  // ao mudar de rota, abre o grupo correspondente (sem fechar os outros)
   useEffect(() => {
     setOpen((m) => {
       const next = { ...m };
@@ -141,28 +136,40 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
       role="navigation"
       aria-label="Navegação principal"
       className={cn(
-        "fixed md:static inset-y-0 left-0 z-40 h-full md:h-screen border-r",
-        "bg-background/70 supports-[backdrop-filter]:bg-background/30 backdrop-blur-xl",
-        "transition-[width,transform] duration-200 ease-in-out",
-        mini ? "w-16" : "w-72 md:w-64",
+        "fixed md:static inset-y-0 left-0 z-40 h-full md:h-screen",
+        "border-r border-border/40",
+        // Glassmorphism
+        "bg-background/80 backdrop-blur-xl backdrop-saturate-150",
+        "supports-[backdrop-filter]:bg-background/60",
+        // Transitions
+        "transition-[width,transform] duration-200 ease-out",
+        mini ? "w-16" : "w-64",
         mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
       )}
     >
-      {/* Cabeçalho */}
-      <div className="h-14 px-3 flex items-center gap-3 border-b">
-        <img
-          src="/logo.png"
-          alt="watchdogs"
-          className={cn("h-5 w-5", mini && "mx-auto")}
-        />
+      {/* Header */}
+      <div
+        className={cn(
+          "h-14 flex items-center border-b border-border/40",
+          mini ? "justify-center px-2" : "px-4 gap-3"
+        )}
+      >
+        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+          <img
+            src="/logo.png"
+            alt="Watchdogs"
+            className="h-5 w-5"
+          />
+        </div>
         {!mini && (
-          <span className="font-semibold tracking-wider truncate text-lg">
-            Watchdogs
-          </span>
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold tracking-tight">Watchdogs</span>
+            <span className="text-[10px] text-muted-foreground">v2.0</span>
+          </div>
         )}
       </div>
 
-      {/* Navegação */}
+      {/* Navigation */}
       <nav className="p-2 space-y-1 overflow-auto h-[calc(100%-3.5rem)] sidebar-scroll">
         {/* Dashboard */}
         <NavLink
@@ -172,142 +179,108 @@ export default function Sidebar({ mini, mobileOpen, onCloseMobile }: Props) {
           title={mini ? "Dashboard" : undefined}
           className={({ isActive }) =>
             cn(
-              "group relative flex items-center rounded-md transition-colors outline-none",
-              mini ? "justify-center " : "px-3 py-2 text-sm font-medium mb-2",
-              "hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring",
-              isActive &&
-                (mini
-                  ? "bg-accent/80 text-accent-foreground ring-1 ring-border"
-                  : "bg-accent text-accent-foreground")
+              "group relative flex items-center gap-3 rounded-lg transition-all duration-150",
+              mini ? "justify-center h-10 w-10 mx-auto" : "px-3 py-2",
+              "hover:bg-accent/50",
+              isActive
+                ? "bg-accent text-accent-foreground font-medium"
+                : "text-muted-foreground hover:text-foreground"
             )
           }
         >
           {({ isActive }) => (
             <>
-              {!mini && (
-                <span
-                  className={cn(
-                    "absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-primary opacity-0 transition-opacity",
-                    isActive && "opacity-100"
-                  )}
-                />
+              {isActive && !mini && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-0.5 rounded-full bg-primary" />
               )}
               <LayoutDashboard
                 className={cn(
-                  "h-5 w-5 transition-colors",
-                  mini ? "text-foreground/80 group-hover:text-foreground" : "",
+                  "h-4 w-4 shrink-0",
                   isActive && "text-primary"
                 )}
               />
-              {!mini && <span className="ml-2">Dashboard</span>}
+              {!mini && <span className="text-sm">Dashboard</span>}
             </>
           )}
         </NavLink>
 
-        {/* Grupos */}
+        {/* Separator */}
+        {!mini && (
+          <div className="my-3 mx-3 h-px bg-border/60" />
+        )}
+
+        {/* Groups */}
         {NAV_ITEMS.map((group) => {
           const { name, icon: Icon, items } = group;
           const isOpen = open[name];
           const isGrpActive = groupIsActive(group);
-          const contentId = `group-${name.replace(/\s+/g, "-").toLowerCase()}`;
 
           return (
-            <div key={name} className="mb-1">
-              <div
-                className={cn(
-                  "group flex items-center rounded-md px-3 py-2 transition-colors",
-                  mini ? "justify-center" : "justify-between",
-                  isGrpActive && !mini && "bg-accent/50 text-accent-foreground"
-                )}
-                aria-label={name}
+            <div key={name}>
+              {/* Group Header */}
+              <button
+                onClick={() => toggleGroup(name)}
                 title={mini ? name : undefined}
+                className={cn(
+                  "w-full flex items-center gap-3 rounded-lg transition-all duration-150",
+                  mini ? "justify-center h-10 w-10 mx-auto" : "px-3 py-2 justify-between",
+                  "hover:bg-accent/50",
+                  isGrpActive
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <Icon
-                    className={cn("h-5 w-5", isGrpActive && "text-primary")}
+                    className={cn(
+                      "h-4 w-4 shrink-0",
+                      isGrpActive && "text-primary"
+                    )}
                   />
                   {!mini && (
-                    <h2
-                      className={cn(
-                        "text-sm font-medium",
-                        isGrpActive && "text-foreground"
-                      )}
-                    >
-                      {name}
-                    </h2>
+                    <span className="text-sm font-medium">{name}</span>
                   )}
                 </div>
-
-                {/* Botão abrir/fechar grupo só quando NÃO mini */}
                 {!mini && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => toggleGroup(name)}
-                    aria-expanded={isOpen}
-                    aria-controls={contentId}
-                    aria-label={
-                      isOpen ? `Recolher ${name}` : `Expandir ${name}`
-                    }
-                    className="h-8 w-8"
-                  >
-                    <ChevronDown
-                      className={cn(
-                        "h-4 w-4 transition-transform duration-200",
-                        isOpen ? "rotate-0" : "-rotate-90"
-                      )}
-                    />
-                  </Button>
+                  <ChevronRight
+                    className={cn(
+                      "h-3.5 w-3.5 text-muted-foreground/60 transition-transform duration-200",
+                      isOpen && "rotate-90"
+                    )}
+                  />
                 )}
-              </div>
+              </button>
 
-              {/* Conteúdo do grupo:
-                  - se mini => escondemos visualmente SEM mexer no estado 'open'
-                  - se !mini => mostra conforme 'isOpen' */}
-              <div
-                id={contentId}
-                className={cn(
-                  "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ",
-                  mini
-                    ? "grid-rows-[0fr] opacity-0 pointer-events-none"
-                    : isOpen
-                    ? "grid-rows-[1fr] opacity-100 mt-1"
-                    : "grid-rows-[0fr] opacity-0"
-                )}
-                aria-hidden={mini || !isOpen}
-              >
-                <div className="overflow-hidden">
-                  {items.map(({ to, label }) => (
-                    <NavLink
-                      to={to}
-                      key={to}
-                      onClick={onCloseMobile}
-                      title={mini ? label : undefined}
-                      className={({ isActive }) =>
-                        cn(
-                          "relative ml-3 flex items-center rounded-md px-3 py-2 text-sm font-medium mb-1 transition-colors outline-none",
-                          "hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring",
-                          isActive && "bg-accent text-accent-foreground"
-                        )
-                      }
-                    >
-                      {({ isActive }) => (
-                        <>
-                          {!mini && (
-                            <span
-                              className={cn(
-                                "absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-primary opacity-0 transition-opacity",
-                                isActive && "opacity-100"
-                              )}
-                            />
-                          )}
-                          <span>{label}</span>
-                        </>
-                      )}
-                    </NavLink>
-                  ))}
+              {/* Group Items */}
+              {!mini && (
+                <div
+                  className={cn(
+                    "overflow-hidden transition-all duration-200 ease-out",
+                    isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                  )}
+                >
+                  <div className="ml-4 pl-3 border-l border-border/40 space-y-0.5 py-1">
+                    {items.map(({ to, label }) => (
+                      <NavLink
+                        key={to}
+                        to={to}
+                        onClick={onCloseMobile}
+                        className={({ isActive }) =>
+                          cn(
+                            "block px-3 py-1.5 rounded-md text-sm transition-colors",
+                            "hover:bg-accent/50",
+                            isActive
+                              ? "text-foreground font-medium bg-accent/30"
+                              : "text-muted-foreground hover:text-foreground"
+                          )
+                        }
+                      >
+                        {label}
+                      </NavLink>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         })}

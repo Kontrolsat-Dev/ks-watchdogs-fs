@@ -4,11 +4,10 @@ import Topbar from "./Topbar";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 
-const STORAGE_KEY = "sidebar_mini_v1"; // novo significado: mini largura
+const STORAGE_KEY = "sidebar_mini_v1";
 
 const AppLayout: React.FC = () => {
   const [mini, setMini] = useState<boolean>(() => {
-    // default: mini = true? Se quiseres expandido por defeito, mete false.
     return localStorage.getItem(STORAGE_KEY) === "1";
   });
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -33,17 +32,28 @@ const AppLayout: React.FC = () => {
           />
         )}
 
-        <div className="flex-1 flex flex-col min-w-0">
-          <Topbar
-            mini={mini}
-            isSidebarOpen={mobileOpen}
-            onToggleMini={() => setMini((v) => !v)}
-            onToggleMobile={() => setMobileOpen((v) => !v)}
-          />
-          <main className="flex-1 overflow-auto px-8 pt-5 pb-10">
-            <Outlet />
-          </main>
-          <Footer />
+        {/* Main content area - scrollable with fixed topbar */}
+        <div className="flex-1 flex flex-col min-w-0 relative overflow-hidden">
+          {/* Single scroll container with flex column layout */}
+          <div className="flex-1 flex flex-col overflow-auto">
+            {/* Sticky Topbar - stays at top while content scrolls behind */}
+            <div className="sticky top-0 z-20">
+              <Topbar
+                mini={mini}
+                isSidebarOpen={mobileOpen}
+                onToggleMini={() => setMini((v) => !v)}
+                onToggleMobile={() => setMobileOpen((v) => !v)}
+              />
+            </div>
+            
+            {/* Page content - flex-1 to push footer to bottom */}
+            <main className="flex-1 px-8 pt-5 pb-10">
+              <Outlet />
+            </main>
+            
+            {/* Footer - sticky at bottom */}
+            <Footer />
+          </div>
         </div>
       </div>
     </div>
