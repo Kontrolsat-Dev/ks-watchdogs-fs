@@ -10,6 +10,7 @@ from app.core.config import settings
 
 log = logging.getLogger("wd.prestashop_client")
 
+
 class PrestashopClient:
     def __init__(
         self,
@@ -49,23 +50,26 @@ class PrestashopClient:
     def login(self, email: str, password: str) -> dict:
         url = settings.PS_AUTH_VALIDATE
         headers = {
-            settings.PS_AUTH_VALIDATE_HEADER: settings.PS_GENESYS_KEY,  # cuidado: não logar isto
+            "X-Genesys-Key": settings.PS_GENESYS_KEY,  # cuidado: não logar isto
             "User-Agent": self.user_agent,
             "Accept": "application/json",
             "Content-Type": "application/json",
         }
 
-        log.info("PrestashopClient.login: POST %s for email=%s UA=%s", url, email, self.user_agent)
+        log.info("PrestashopClient.login: POST %s for email=%s UA=%s",
+                 url, email, self.user_agent)
 
         try:
             timeout = int(getattr(settings, "PS_TIMEOUT_S", 20))
         except Exception:
             timeout = 20
 
-        verify = certifi.where() if str(getattr(settings, "PS_AUTH_VERIFY_SSL", "true")).lower() != "false" else False
+        verify = certifi.where() if str(getattr(settings, "PS_AUTH_VERIFY_SSL", "true")
+                                        ).lower() != "false" else False
 
         # Fazer o request
         try:
+            log.warning("email: %s passowd: %s", email, password)
             resp = self._session.post(
                 url,
                 json={"email": email, "password": password},
@@ -75,17 +79,20 @@ class PrestashopClient:
             )
         except Exception:
             log.exception("PrestashopClient.login: request failed")
-            return {"id": email, "email": email, "name": "Guest", "role": "Guest"}
+            raise Exception("Login invalido")
 
         if resp.status_code >= 400:
-            log.warning("PrestashopClient.login: error body=%s", (resp.text[:500] if resp.text else "<empty>"))
+            log.warning("PrestashopClient.login: error body=%s",
+                        (resp.text[:500] if resp.text else "<empty>"))
+            raise Exception("Login invalido")
 
         # Parse seguro
         data = {}
         try:
             data = resp.json() if resp.content else {}
         except Exception:
-            log.debug("PrestashopClient.login: non-JSON response: %r", resp.text[:500] if resp.text else "<empty>")
+            log.debug("PrestashopClient.login: non-JSON response: %r",
+                      resp.text[:500] if resp.text else "<empty>")
 
         user = data.get("user") or {}
         return {

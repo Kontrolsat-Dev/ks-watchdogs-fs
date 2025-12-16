@@ -11,8 +11,10 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { useTheme } from "@/providers/theme-provider";
+import { useLogout } from "@/lib/auth-hooks";
 
 type Props = {
   onToggleMobile: () => void; // abre/fecha gaveta no mobile
@@ -38,6 +40,8 @@ export default function Topbar({
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
   const latencyMs = data?.elapsedMs ? Math.round(data.elapsedMs) : null;
+
+  const logout = useLogout();
 
   return (
     <div className="sticky top-0 z-10 h-14 border-b bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40">
@@ -83,7 +87,7 @@ export default function Topbar({
         </div>
 
         {/* Direita: estado + ações */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4 mr-10">
           <div
             className={cn(
               "flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs",
@@ -145,6 +149,16 @@ export default function Topbar({
             )}
             <span className="sr-only">Toggle theme</span>
           </div>
+          <Button
+            className="cursor-pointer dark:hover:text-white hover:text-blue-500 transition-all duration-300"
+            size={"icon"}
+            variant="ghost"
+            onClick={logout}
+            title="Terminar sessão"
+            aria-label="Terminar sessão"
+          >
+            <LogOut className="h-6 w-6" />
+          </Button>
         </div>
       </div>
     </div>

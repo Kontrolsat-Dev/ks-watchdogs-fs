@@ -206,56 +206,64 @@
   :root { --sb-size: 8px; }
 }
 
+/* ========================================
+   SCROLLBAR - Vercel Minimalist Style
+   ======================================== */
+
+/* Firefox */
 .sidebar-scroll {
   scrollbar-width: thin;
-  scrollbar-gutter: stable both-edges;
-  scrollbar-color: hsl(var(--muted-foreground) / 0.45)
-                   hsl(var(--muted) / 0.18);
+  scrollbar-color: var(--sb-thumb-color) transparent;
 }
 
 /* WebKit (Chrome/Edge/Safari) */
 .sidebar-scroll::-webkit-scrollbar {
-  width: var(--sb-size);
-  height: var(--sb-size);
-}
-.sidebar-scroll:hover::-webkit-scrollbar {
-  /* ligeiro “breathe” ao hover */
-  width: calc(var(--sb-size) + 2px);
-  height: calc(var(--sb-size) + 2px);
-}
-.sidebar-scroll::-webkit-scrollbar-track {
-  /* track subtil “glass” */
-  background:
-    linear-gradient(
-      to bottom,
-      hsl(var(--muted) / 0.22),
-      hsl(var(--muted) / 0.14)
-    );
-  border-radius: var(--sb-radius);
-}
-.sidebar-scroll::-webkit-scrollbar-thumb {
-  /* thumb com padding visual + aro subtil */
-  background:
-    linear-gradient(
-      to bottom,
-      hsl(var(--muted-foreground) / 0.65),
-      hsl(var(--muted-foreground) / 0.5)
-    );
-  border-radius: var(--sb-radius);
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  box-shadow: inset 0 0 0 1px hsl(var(--border) / 0.6);
-}
-.sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background:
-    linear-gradient(
-      to bottom,
-      hsl(var(--muted-foreground) / 0.8),
-      hsl(var(--muted-foreground) / 0.65)
-    );
+  width: 6px;
+  height: 6px;
 }
 
-/* canto transparente (quando ambos scrolls visíveis) */
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 9999px;
+  transition: background 0.15s ease;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--sb-thumb-hover-color);
+}
+
 .sidebar-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Global scrollbar (all scrollable areas) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb-color) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--sb-thumb-hover-color);
+}
+
+*::-webkit-scrollbar-corner {
   background: transparent;
 }

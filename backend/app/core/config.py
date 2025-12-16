@@ -6,12 +6,12 @@ from typing import List, Literal
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True)
+    model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True, extra="ignore")
     # General
     TIMEZONE: str = "Europe/Lisbon"
     # ---------------
     # App
-    APP_ENV: Literal["dev", "prod", "test"] = "dev"  # ← antes: str = True
+    APP_ENV: Literal["dev", "prod", "test"] = "dev"
     APP_PORT: int = 8000
     CORS_ORIGINS: List[str] = Field(
         default_factory=lambda: [
@@ -36,7 +36,6 @@ class Settings(BaseSettings):
     PS_USER_AGENT: str = "prestashop-allowed-ua"
     # --> Auth
     PS_AUTH_VALIDATE: str = "https://domain.com/__watchdogs/login.php"
-    PS_AUTH_VALIDATE_HEADER: str = "x-validation-header"
     PS_GENESYS_KEY: str = "ps-api-key"
     PS_AUTH_VERIFY_SSL: str = "true"
     # --> Payments
@@ -94,16 +93,10 @@ class Settings(BaseSettings):
     FRONT_INVOICE_AUDIT_BASE_URL: str = (
         "https://domain.com/custom/frontInvoiceAudit/get-audits.php"
     )
-    # N8N
-    N8N_REPORT_WEBHOOK_URL: str = ""
-    N8N_WEBHOOK_TOKEN: str = ""
-    KPI_REPORT_PERIOD: str = "day"
-    KPI_REPORT_LIMIT: int = 200
-    KPI_REPORT_PROMPT_VERSION: int = 1
+
     # Tools
     # --- PDA ---
     TOOLS_PDA_API_KEY: str = "api-key-pda"
-    TOOLS_PDA_BASE_END: str = "https://www.domain.com/__fastLogixApi/reports/api"
     TOOLS_PDA_GET_REPORTS: str = (
         "https://www.domain.com/__fastLogixApi/reports/api/getReports.php"
     )

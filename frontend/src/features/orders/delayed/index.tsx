@@ -33,7 +33,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import LoadingDelayedOrders from "./components/loading-delayed-orders";
 import LevelBadge from "./components/level-badge";
 import DropshipBadge from "./components/dropship-badge";
-import { RefreshCcw, Search } from "lucide-react";
+import { RefreshCcw, Search, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import FlashError from "@/components/data/flash-error";
 import { formatDate, timeAgo } from "@/helpers/time";
@@ -226,12 +226,22 @@ export default function OrdersDelayedPage() {
                 {filtered.map((o) => (
                   <TableRow key={o.id_order}>
                     <TableCell className="font-medium">
-                      <div className="leading-tight">
-                        <div className="font-mono text-xs text-muted-foreground">
-                          #{o.id_order}
+                      <a
+                        href={`https://www.kontrolsat.com/admin230/index.php?controller=AdminOrders&vieworder=&id_order=${o.id_order}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center gap-1.5 hover:text-primary transition-colors"
+                      >
+                        <div className="leading-tight">
+                          <div className="font-mono text-xs text-muted-foreground group-hover:text-primary/70">
+                            #{o.id_order}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {o.reference}
+                            <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
                         </div>
-                        <div>{o.reference}</div>
-                      </div>
+                      </a>
                     </TableCell>
 
                     <TableCell>
