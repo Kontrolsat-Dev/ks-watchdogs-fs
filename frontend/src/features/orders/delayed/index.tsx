@@ -2,6 +2,7 @@
 // Página: Encomendas com Atraso (design moderno com shadcn)
 
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useDelayedOrders } from "./queries";
 import type { DelayedOrdersResponse } from "@/api/prestashop/types";
 import {
@@ -38,6 +39,34 @@ import { cn } from "@/lib/utils";
 import FlashError from "@/components/data/flash-error";
 import { formatDate, timeAgo } from "@/helpers/time";
 
+function psOrderUrl(id_order: number) {
+  return `https://www.kontrolsat.com/admin230/index.php?controller=AdminOrders&vieworder=&id_order=${id_order}`;
+}
+
+async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success("Copiado!", { description: text });
+    return;
+  } catch {
+    // fallback (menos perfeito, mas evita ficar “morto” em browsers/contexts mais chatos)
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    ta.style.top = "-9999px";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand("copy");
+      toast.success("Copiado!", { description: text });
+    } finally {
+      document.body.removeChild(ta);
+    }
+  }
+}
+
 export default function OrdersDelayedPage() {
   const { data, isFetching, refetch, isError } = useDelayedOrders() as {
     data?: DelayedOrdersResponse;
@@ -49,7 +78,7 @@ export default function OrdersDelayedPage() {
   // Filtros
   const [q, setQ] = useState("");
   const [status, setStatus] = useState<"all" | "critical" | "warning" | "ok">(
-    "all"
+    "all",
   );
   const [ds, setDs] = useState<"all" | "yes" | "no">("all");
 
@@ -71,13 +100,13 @@ export default function OrdersDelayedPage() {
       .filter((o) =>
         text
           ? o.reference.toLowerCase().includes(text) ||
-            String(o.id_order).includes(text) ||
-            o.state_name.toLowerCase().includes(text)
-          : true
+          String(o.id_order).includes(text) ||
+          o.state_name.toLowerCase().includes(text)
+          : true,
       )
       .filter((o) => (status === "all" ? true : o.status === status))
       .filter((o) =>
-        ds === "all" ? true : ds === "yes" ? o.dropshipping : !o.dropshipping
+        ds === "all" ? true : ds === "yes" ? o.dropshipping : !o.dropshipping,
       )
       .sort((a, b) => b.days_passed - a.days_passed);
   }, [orders, q, status, ds]);
@@ -132,7 +161,7 @@ export default function OrdersDelayedPage() {
               <RefreshCcw
                 className={cn(
                   "h-4 w-4",
-                  isFetching && "animate-spin [animation-duration:1.1s]"
+                  isFetching && "animate-spin [animation-duration:1.1s]",
                 )}
               />
               <span className="sr-only">Recarregar</span>
@@ -226,22 +255,57 @@ export default function OrdersDelayedPage() {
                 {filtered.map((o) => (
                   <TableRow key={o.id_order}>
                     <TableCell className="font-medium">
-                      <a
-                        href={`https://www.kontrolsat.com/admin230/index.php?controller=AdminOrders&vieworder=&id_order=${o.id_order}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex items-center gap-1.5 hover:text-primary transition-colors"
-                      >
-                        <div className="leading-tight">
-                          <div className="font-mono text-xs text-muted-foreground group-hover:text-primary/70">
+                      <div className="group flex items-center justify-between gap-2">
+                        <div className="min-w-0 leading-tight">
+                          {/* Clicar aqui copia o ID */}
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(String(o.id_order))}
+                            className={cn(
+                              "block w-fit font-mono text-xs text-muted-foreground",
+                              "hover:text-primary/80 transition-colors",
+                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
+                            )}
+                            title="Copiar ID da encomenda"
+                            aria-label={`Copiar ID da encomenda ${o.id_order}`}
+                          >
                             #{o.id_order}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            {o.reference}
-                            <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                          </div>
+                          </button>
+
+                          {/* Clicar aqui copia a referência */}
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(o.reference)}
+                            className={cn(
+                              "mt-0.5 flex max-w-[110px] items-center gap-1 truncate",
+                              "hover:text-primary transition-colors",
+                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
+                            )}
+                            title="Copiar referência"
+                            aria-label={`Copiar referência ${o.reference}`}
+                          >
+                            <span className="truncate">{o.reference}</span>
+                          </button>
                         </div>
-                      </a>
+
+                        {/* Ícone separado para abrir no admin (novo separador) */}
+                        <a
+                          href={psOrderUrl(o.id_order)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className={cn(
+                            "shrink-0 rounded-sm p-1 text-muted-foreground",
+                            "opacity-0 group-hover:opacity-100",
+                            "hover:text-primary transition-all",
+                            "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                          )}
+                          title="Abrir no PrestaShop (novo separador)"
+                          aria-label="Abrir no PrestaShop (novo separador)"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
+                      </div>
                     </TableCell>
 
                     <TableCell>
@@ -260,11 +324,11 @@ export default function OrdersDelayedPage() {
                         className={cn(
                           "font-medium",
                           o.status === "critical" &&
-                            "text-red-600 dark:text-red-400",
+                          "text-red-600 dark:text-red-400",
                           o.status === "warning" &&
-                            "text-amber-600 dark:text-amber-300",
+                          "text-amber-600 dark:text-amber-300",
                           o.status === "ok" &&
-                            "text-emerald-600 dark:text-emerald-300"
+                          "text-emerald-600 dark:text-emerald-300",
                         )}
                       >
                         {o.days_passed}d
